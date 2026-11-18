@@ -1,11 +1,15 @@
 <div align="center">
 
-# 🍎 HomeCider
+<h1><img src="docs/images/logo.png" alt="" width="52" align="absmiddle"/> HomeCider</h1>
 
-**Turn any Apple Silicon Mac into a private home server.**
+**A complete, self-hosted home server built on Apple Silicon.**
 
-Films, shows and photo backup, set up with three commands and a short checklist.<br/>
-Everything stays on your home network.
+<img src="docs/images/banner.jpg" alt="HomeCider: media streaming, photo management, system security, encrypted backups and media downloads" width="900"/>
+
+HomeCider automates the setup and management of a private home server on macOS, bringing together
+media streaming, photo management, encrypted backups, and system security.
+
+Built on proven open-source projects, automated maintenance, and privacy at its core.
 
 [![shellcheck](https://github.com/NipunaRanasinghe/homecider/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/NipunaRanasinghe/homecider/actions/workflows/shellcheck.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -20,10 +24,6 @@ Everything stays on your home network.
 [How it works](#how-it-works) ·
 [Docs](#documentation) ·
 [Contributing](#contributing)
-
-<img src="docs/images/seerr-discover.jpg" alt="Seerr Discover page listing trending and popular films and shows" width="860"/>
-
-<sub>Seerr's Discover page, where people at home request films and shows (<code>downloads</code> module, off by default).</sub>
 
 </div>
 
@@ -59,6 +59,11 @@ Nothing is exposed to the internet: no port forwards, no UPnP, and admin-only to
 <p align="center">
   <img src="docs/images/immich-demo.jpg" alt="Immich photo timeline in the web app" width="820"/><br/>
   <sub>Immich's photo timeline (<code>photos</code> module). Screenshot of Immich's public demo at <a href="https://demo.immich.app">demo.immich.app</a>, not of a HomeCider server.</sub>
+</p>
+
+<p align="center">
+  <img src="docs/images/seerr-discover.jpg" alt="Seerr Discover page listing trending and popular films and shows" width="820"/><br/>
+  <sub>Seerr's Discover page, where people at home request films and shows (<code>downloads</code> module, off by default).</sub>
 </p>
 
 ### Why macOS and not Linux
@@ -176,93 +181,185 @@ The `backup` module backs vaults up as they are, still encrypted.
 ## How it works
 
 ```mermaid
----
-config:
-  look: neo
-  theme: base
-  themeVariables:
-    fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "14px"
-    lineColor: "#94A3B8"
-  flowchart:
-    curve: basis
-    nodeSpacing: 22
-    rankSpacing: 34
-    padding: 8
----
 flowchart TB
-  subgraph clients["👥 Home network devices"]
-    direction LR
-    phone(["📱 Phone · Immich app"])
-    screens(["📺 TV · laptop · tablet"])
-    browser(["🖥️ Browser · Seerr"])
-  end
-
-  subgraph mac["💻 Apple Silicon Mac · FileVault · firewall · key-only SSH"]
-    jellyfin("🎬 Jellyfin · media<br/>native, user _jellyfin · VideoToolbox")
-    immich("🖼️ Immich · photos<br/>server · ML · Postgres · Valkey")
-    subgraph get["⬇️ downloads · opt-in · Docker"]
-      seerr("Seerr")
-      arr("Radarr · films<br/>Sonarr · shows")
-      prowlarr("Prowlarr")
-      qbit("qBittorrent 🔒")
-      maintainerr("Maintainerr 🔒")
-      gluetun("Gluetun VPN<br/>kill switch")
+    %% =================================================
+    %% HOME NETWORK CLIENTS
+    %% =================================================
+    subgraph CLIENTS["HOME NETWORK · CLIENT DEVICES"]
+        direction LR
+        PHONE["📱 Phone<br/>Immich App"]
+        TV["📺 TV · Laptop · Tablet<br/>Jellyfin"]
+        BROWSER["🖥️ Browser<br/>Seerr"]
+        ADMIN["🔧 Admin Device<br/>SSH"]
     end
-    subgraph disk["💾 Disk"]
-      direction LR
-      media[("~/Media")]
-      photos[("~/Photos/immich")]
-      vault[("~/Vault 🔐")]
+
+    %% =================================================
+    %% APPLE SILICON HOST
+    %% =================================================
+    subgraph HOST["🍎 APPLE SILICON MAC · macOS HOST"]
+        direction TB
+
+        %% HOST SECURITY
+        subgraph SECURITY["01 · HOST SECURITY & FOUNDATION"]
+            direction LR
+            FV["FileVault<br/>Full Disk Encryption"]
+            FW["macOS Firewall<br/>Stealth Mode"]
+            SSH["SSH<br/>Key-only Authentication"]
+            POWER["Power Management<br/>No Sleep · Battery Protection"]
+        end
+
+        %% APPLICATIONS
+        subgraph APPLICATIONS["02 · APPLICATION & SERVICE LAYER"]
+            direction TB
+
+            %% NATIVE SERVICES
+            subgraph NATIVE["NATIVE macOS · OUTSIDE CONTAINERS"]
+                direction LR
+                JF["🎬 Jellyfin<br/>Dedicated Service User"]
+                VT["Apple VideoToolbox<br/>Hardware Transcoding"]
+                JF ---|"Hardware acceleration"| VT
+            end
+
+            %% ORBSTACK
+            subgraph ORBSTACK["ORBSTACK · CONTAINER ENVIRONMENT"]
+                direction TB
+
+                %% PHOTO SERVICES
+                subgraph PHOTOS["🖼️ PHOTO MANAGEMENT"]
+                    direction LR
+                    IMM["Immich Server"]
+                    ML["Machine Learning"]
+                    DB["PostgreSQL"]
+                    VALKEY["Valkey"]
+                    IMM --- ML
+                    IMM --- DB
+                    IMM --- VALKEY
+                end
+
+                %% OPTIONAL DOWNLOAD SERVICES
+                subgraph DOWNLOADS["⬇️ DOWNLOAD MANAGEMENT · OPTIONAL / OFF BY DEFAULT"]
+                    direction TB
+                    SEERR["Seerr<br/>Media Requests"]
+                    ARR["Radarr · Sonarr<br/>Prowlarr"]
+                    QB["qBittorrent"]
+                    VPN["Gluetun VPN<br/>Kill Switch"]
+                    MAINT["Maintainerr<br/>Library Cleanup"]
+
+                    SEERR -->|"Requests"| ARR
+                    ARR -->|"Download jobs"| QB
+                    QB -->|"Network traffic"| VPN
+                    MAINT -.->|"Watch history / cleanup"| ARR
+                end
+            end
+        end
+
+        %% STORAGE
+        subgraph STORAGE["03 · LOCAL DATA & STORAGE"]
+            direction LR
+            MEDIA[("🎬 Media Library<br/>~/Media")]
+            PHOTO[("🖼️ Photo Library<br/>~/Photos/immich")]
+            VAULT[("🔐 Encrypted Vaults<br/>~/Vault")]
+        end
+
+        %% HOMECIDER OPERATIONS
+        subgraph MANAGEMENT["04 · HOMECIDER · SYSTEM MANAGEMENT"]
+            direction TB
+
+            subgraph CORE["CORE · ALWAYS ENABLED"]
+                direction LR
+                CONFIG["System Configuration<br/>Security · Power"]
+                MON["Monitoring<br/>Disk · Battery · Services"]
+                ALERT["Push Alerts"]
+                UPDATE["Scheduled Updates"]
+            end
+
+            subgraph BACKUP["BACKUP · OPTIONAL"]
+                RESTIC["Restic<br/>Encrypted Snapshots"]
+                RESTORE["Restore Testing<br/>Stale Backup Alerts"]
+            end
+
+            CONFIG -.-> MON
+            MON --> ALERT
+            CONFIG -.-> UPDATE
+            RESTIC -.-> RESTORE
+        end
+
+        %% INTERNAL DATA FLOWS
+        JF -->|"Read-only access"| MEDIA
+        IMM -->|"Photo / video storage"| PHOTO
+        QB -->|"Downloaded files"| MEDIA
+        ARR -->|"Import / hardlinks"| MEDIA
+
+        %% BACKUP SOURCES
+        PHOTO -.->|"Backup source"| RESTIC
+        VAULT -.->|"Encrypted archive"| RESTIC
+        RESTIC -->|"Backup operations"| RESTORE
     end
-    ops("⏱️ core · launchd<br/>alerts · weekly updates · low-battery shutdown · nightly backup")
-  end
 
-  subgraph net["🌐 Internet"]
-    direction LR
-    indexers{{"Indexers · your choice"}}
-    peers{{"Torrent peers"}}
-    ntfy{{"ntfy.sh → phone"}}
-    b2{{"Backblaze B2 / S3 · backup"}}
-  end
+    %% =================================================
+    %% EXTERNAL SERVICES
+    %% =================================================
+    subgraph EXTERNAL["EXTERNAL SERVICES · INTERNET"]
+        direction LR
+        INDEXERS["🌐 Indexers"]
+        PEERS["Torrent Peers"]
+        NTFY["📨 ntfy.sh<br/>Push Notifications"]
+        CLOUD["☁️ Backblaze B2 / S3<br/>Backup Destination"]
+    end
 
-  phone -->|Wi-Fi backup| immich --> photos
-  browser -->|request| seerr --> arr
-  prowlarr -->|indexers| arr
-  prowlarr <--> indexers
-  arr --> qbit --> gluetun <-->|VPN tunnel| peers
-  qbit -->|download| media
-  arr -->|hardlink import| media
-  screens -->|stream| jellyfin -->|read only| media
-  arr -.->|refresh| jellyfin
-  maintainerr -.->|watch history| jellyfin
-  maintainerr -.->|delete 7 days after watched| arr
-  ops --> ntfy
-  ops -.->|restic, encrypted| b2
-  photos -.-> ops
-  vault -.-> ops
+    %% =================================================
+    %% CLIENT ACCESS FLOWS
+    %% =================================================
+    PHONE -->|"Photo backup · LAN"| IMM
+    TV -->|"Media streaming · LAN"| JF
+    BROWSER -->|"Media requests · LAN"| SEERR
+    ADMIN -->|"Secure administration · SSH"| SSH
 
-  classDef client fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E
-  classDef watchc fill:#EDE9FE,stroke:#7C3AED,color:#3B0764
-  classDef getc fill:#FFEDD5,stroke:#EA580C,color:#7C2D12
-  classDef photoc fill:#DCFCE7,stroke:#16A34A,color:#14532D
-  classDef store fill:#F1F5F9,stroke:#475569,color:#0F172A
-  classDef opsc fill:#FEF9C3,stroke:#CA8A04,color:#713F12
-  classDef ext fill:#FFFFFF,stroke:#94A3B8,color:#334155,stroke-dasharray:4 3
+    %% =================================================
+    %% EXTERNAL NETWORK FLOWS
+    %% =================================================
+    ARR <-->|"Indexer queries"| INDEXERS
+    VPN <-->|"VPN tunnel"| PEERS
+    ALERT -->|"Notifications"| NTFY
+    RESTIC -->|"Encrypted backup data"| CLOUD
 
-  class phone,screens,browser client
-  class jellyfin watchc
-  class seerr,arr,prowlarr,qbit,maintainerr,gluetun getc
-  class immich photoc
-  class media,photos,vault store
-  class ops opsc
-  class peers,indexers,ntfy,b2 ext
+    %% =================================================
+    %% SECURITY BOUNDARY NOTES
+    %% =================================================
+    SECURITY_NOTE["🔒 No public service exposure<br/>No port forwarding · No UPnP<br/>Admin-only tools listen on localhost"]
+    VPN_NOTE["🔐 Download traffic is VPN-only<br/>unless home-connection access is explicitly enabled"]
 
-  style clients fill:#F0F9FF,stroke:#7DD3FC,color:#0C4A6E
-  style mac fill:#F8FAFC,stroke:#64748B,stroke-width:2px,color:#0F172A
-  style get fill:#FFF7ED,stroke:#FDBA74,color:#7C2D12
-  style disk fill:#F8FAFC,stroke:#CBD5E1,color:#0F172A
-  style net fill:#FFFFFF,stroke:#CBD5E1,stroke-dasharray:5 5,color:#334155
+    SECURITY_NOTE -.- SECURITY
+    VPN_NOTE -.- VPN
+
+    %% =================================================
+    %% STYLING
+    %% =================================================
+    classDef client fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E
+    classDef native fill:#EDE9FE,stroke:#7C3AED,color:#3B0764
+    classDef photo fill:#DCFCE7,stroke:#16A34A,color:#14532D
+    classDef download fill:#FFEDD5,stroke:#EA580C,color:#7C2D12
+    classDef storage fill:#F1F5F9,stroke:#475569,color:#0F172A
+    classDef ops fill:#FEF9C3,stroke:#CA8A04,color:#713F12
+    classDef external fill:#F8FAFC,stroke:#64748B,color:#334155
+    classDef security fill:#FEE2E2,stroke:#DC2626,color:#7F1D1D
+
+    class PHONE,TV,BROWSER,ADMIN client
+    class JF,VT native
+    class IMM,ML,DB,VALKEY photo
+    class SEERR,ARR,QB,VPN,MAINT download
+    class MEDIA,PHOTO,VAULT storage
+    class CONFIG,MON,ALERT,UPDATE,RESTIC,RESTORE ops
+    class INDEXERS,PEERS,NTFY,CLOUD external
+    class SECURITY_NOTE,VPN_NOTE security
+
+    style HOST fill:#F8FAFC,stroke:#334155,stroke-width:3px,color:#0F172A
+    style CLIENTS fill:#EFF6FF,stroke:#60A5FA,color:#1E3A8A
+    style EXTERNAL fill:#F8FAFC,stroke:#94A3B8,stroke-dasharray:5 5,color:#334155
+    style NATIVE fill:#F5F3FF,stroke:#A78BFA,color:#4C1D95
+    style ORBSTACK fill:#FFF7ED,stroke:#FDBA74,color:#7C2D12
+    style STORAGE fill:#F1F5F9,stroke:#94A3B8,color:#0F172A
+    style MANAGEMENT fill:#FEFCE8,stroke:#EAB308,color:#713F12
 ```
 
 🔒 listens on 127.0.0.1 only (SSH tunnel) · 🔐 encrypted disk image, closed when not in use ·
