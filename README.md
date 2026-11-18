@@ -3,20 +3,27 @@
 **Turn any Mac into a private home server.** HomeCider sets up films, shows and photo backup with three
 commands and a short checklist, and keeps everything on your home network.
 
-Works on Apple Silicon Macs (M1 or later): MacBook (lid closed), Mac mini, iMac or Mac Studio. Intel Macs are
-not supported: Apple no longer releases new macOS versions for them, and HomeCider is tested only on Apple Silicon.
+[![shellcheck](https://github.com/NipunaRanasinghe/homecider/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/NipunaRanasinghe/homecider/actions/workflows/shellcheck.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![macOS on Apple Silicon](https://img.shields.io/badge/macOS-Apple%20Silicon-black?logo=apple)
+![Status: 0.1.0-dev](https://img.shields.io/badge/status-0.1.0--dev-orange)
 
-Use a Mac that stays at home and stays on. A dedicated one is best, because HomeCider changes settings for the
-whole Mac: it disables sleep (also with the lid closed), turns off File Sharing and Screen Sharing, makes your
-home folder private to other accounts, upgrades its own Homebrew apps every week, and on laptops shuts the Mac down
-at 15% battery (`BATTERY_SHUTDOWN_PCT`). Every setting and its default is in `homecider.env.example`.
+```sh
+git clone https://github.com/NipunaRanasinghe/homecider.git ~/homecider && cd ~/homecider
+bin/homecider init && bin/homecider doctor && bin/homecider apply
+```
 
-> **After a restart or power cut, everything stays down until someone unlocks the Mac in person.** With
-> FileVault on (recommended), macOS waits at the unlock screen before any service or SSH starts. Laptops ride
-> out short power cuts on battery; desktops restart only when power returns and still need the unlock.
+Read [Before you install](#before-you-install) first: `apply` changes settings for the whole Mac.
 
-> Status: early development (0.1.0-dev). Tested on a MacBook Air M1 with the current macOS.
+> [!NOTE]
+> Early development (0.1.0-dev). Tested on a MacBook Air M1 with the current macOS.
 > Other Apple Silicon Macs should work; reports are welcome.
+
+**Contents:** [What you get](#what-you-get) · [Before you install](#before-you-install) ·
+[Requirements](#requirements) · [Install](#install) · [Everyday use](#everyday-use) ·
+[How it fits together](#how-it-fits-together) · [Why macOS](#why-macos-and-not-linux) ·
+[What `apply` changes](#what-apply-changes-on-your-mac) · [Uninstall](#uninstall) ·
+[Contributing](#contributing) · [License](#license)
 
 ## What you get
 
@@ -29,6 +36,74 @@ at 15% battery (`BATTERY_SHUTDOWN_PCT`). Every setting and its default is in `ho
 | `downloads` | Request and library management (Seerr, Radarr, Sonarr, Prowlarr, qBittorrent, Maintainerr) with 1080p quality profiles. VPN-only unless you opt in to your home connection. See [docs/downloads.md](docs/downloads.md) | **off** |
 
 Nothing is exposed to the internet: no port forwards, no UPnP, and admin-only tools listen on localhost.
+
+## Before you install
+
+Works on Apple Silicon Macs (M1 or later): MacBook (lid closed), Mac mini, iMac or Mac Studio. Intel Macs are
+not supported: Apple no longer releases new macOS versions for them, and HomeCider is tested only on Apple Silicon.
+
+Use a Mac that stays at home and stays on. A dedicated one is best, because HomeCider changes settings for the
+whole Mac: it disables sleep (also with the lid closed), turns off File Sharing and Screen Sharing, makes your
+home folder private to other accounts, upgrades its own Homebrew apps every week, and on laptops shuts the Mac down
+at 15% battery (`BATTERY_SHUTDOWN_PCT`). Every setting and its default is in `homecider.env.example`.
+The full list of system changes is in [What `apply` changes on your Mac](#what-apply-changes-on-your-mac).
+
+> [!WARNING]
+> **After a restart or power cut, everything stays down until someone unlocks the Mac in person.** With
+> FileVault on (recommended), macOS waits at the unlock screen before any service or SSH starts. Laptops ride
+> out short power cuts on battery; desktops restart only when power returns and still need the unlock.
+
+## Requirements
+
+- Apple Silicon Mac (M1 or later), current or previous macOS release
+- [Homebrew](https://brew.sh)
+- Remote Login (SSH) on, with your SSH public key in `~/.ssh/authorized_keys`. **`apply` turns off SSH password
+  login**, so add the key first.
+- FileVault on (recommended). After every restart the Mac must be unlocked in person before services start.
+
+## Install
+
+On the Mac that will be the server:
+
+```sh
+git clone https://github.com/NipunaRanasinghe/homecider.git ~/homecider
+cd ~/homecider
+bin/homecider init      # writes ~/.config/homecider/homecider.env; review MODULES and paths
+bin/homecider doctor    # checks prerequisites
+bin/homecider apply     # sets everything up; asks for your password once for system changes
+```
+
+`apply` is safe to re-run: after changing `homecider.env`, after `git pull`, or to repair a setting.
+
+Then, once:
+
+1. Install the [ntfy](https://ntfy.sh) app on your phone and subscribe to the topic `apply` printed.
+2. Open Jellyfin at `http://<mac>:8096` and Immich at `http://<mac>:2283` **right away** and create the admin
+   accounts. The first visitor becomes admin.
+3. Jellyfin: Dashboard → Playback → Transcoding → Hardware acceleration: **Apple VideoToolbox**.
+4. Laptops: set a charge limit (System Settings → Battery), so the battery is not held at 100% all the time.
+
+## Everyday use
+
+```sh
+bin/homecider status    # services, jobs, containers, disk, battery, active alerts
+bin/homecider apply     # after editing homecider.env or pulling a new version
+```
+
+- **Alerts** arrive on your phone when the disk is above 85% (`DISK_ALERT_PCT`), the Mac runs on battery,
+  Jellyfin or Immich is down for 10 minutes, a container stops, the last backup is more than 36 hours old, or a
+  macOS update is waiting.
+  Alerts go through the public [ntfy.sh](https://ntfy.sh) server: the message text (e.g. "Disk 91% full",
+  "Jellyfin is down") passes through it, and anyone who knows your topic name can read your alerts. The topic is
+  random (`hc-` plus 24 hex characters); keep it private, or set `NTFY_SERVER` to your own ntfy server.
+- **Vaults** for archives you rarely open (old phone backups, documents): `bin/homecider vault create NAME` makes an
+  AES-256 encrypted disk image in `~/Vault`; while closed it is unreadable, even to programs running as you.
+  The `backup` module backs vaults up as they are, still encrypted.
+- **Updates**: HomeCider's Homebrew apps (OrbStack, Jellyfin, restic) and container images update every Sunday at
+  04:00 (`UPDATE_WEEKDAY`, `UPDATE_HOUR`). Set `UPDATE_ALL_HOMEBREW=true` to upgrade every Homebrew app.
+  After the update, dangling Docker images (untagged, unused) are removed; `UPDATE_PRUNE_IMAGES=false` keeps them.
+  Immich is pinned; you get a message when a new release exists. macOS updates download automatically and wait
+  for you, because each one restarts into the FileVault unlock screen.
 
 ## How it fits together
 
@@ -135,58 +210,6 @@ Without a VPN configured, qBittorrent sends nothing; the home connection is an e
 
 Containers run in [OrbStack](https://orbstack.dev), which uses less memory and CPU than Docker Desktop.
 Jellyfin runs outside Docker because containers on macOS cannot use VideoToolbox.
-
-## Requirements
-
-- Apple Silicon Mac (M1 or later), current or previous macOS release
-- [Homebrew](https://brew.sh)
-- Remote Login (SSH) on, with your SSH public key in `~/.ssh/authorized_keys`. **`apply` turns off SSH password
-  login**, so add the key first.
-- FileVault on (recommended). After every restart the Mac must be unlocked in person before services start.
-
-## Install
-
-On the Mac that will be the server:
-
-```sh
-git clone https://github.com/NipunaRanasinghe/homecider.git ~/homecider
-cd ~/homecider
-bin/homecider init      # writes ~/.config/homecider/homecider.env; review MODULES and paths
-bin/homecider doctor    # checks prerequisites
-bin/homecider apply     # sets everything up; asks for your password once for system changes
-```
-
-`apply` is safe to re-run: after changing `homecider.env`, after `git pull`, or to repair a setting.
-
-Then, once:
-
-1. Install the [ntfy](https://ntfy.sh) app on your phone and subscribe to the topic `apply` printed.
-2. Open Jellyfin at `http://<mac>:8096` and Immich at `http://<mac>:2283` **right away** and create the admin
-   accounts. The first visitor becomes admin.
-3. Jellyfin: Dashboard → Playback → Transcoding → Hardware acceleration: **Apple VideoToolbox**.
-4. Laptops: set a charge limit (System Settings → Battery), so the battery is not held at 100% all the time.
-
-## Everyday use
-
-```sh
-bin/homecider status    # services, jobs, containers, disk, battery, active alerts
-bin/homecider apply     # after editing homecider.env or pulling a new version
-```
-
-- **Alerts** arrive on your phone when the disk is above 85% (`DISK_ALERT_PCT`), the Mac runs on battery,
-  Jellyfin or Immich is down for 10 minutes, a container stops, the last backup is more than 36 hours old, or a
-  macOS update is waiting.
-  Alerts go through the public [ntfy.sh](https://ntfy.sh) server: the message text (e.g. "Disk 91% full",
-  "Jellyfin is down") passes through it, and anyone who knows your topic name can read your alerts. The topic is
-  random (`hc-` plus 24 hex characters); keep it private, or set `NTFY_SERVER` to your own ntfy server.
-- **Vaults** for archives you rarely open (old phone backups, documents): `bin/homecider vault create NAME` makes an
-  AES-256 encrypted disk image in `~/Vault`; while closed it is unreadable, even to programs running as you.
-  The `backup` module backs vaults up as they are, still encrypted.
-- **Updates**: HomeCider's Homebrew apps (OrbStack, Jellyfin, restic) and container images update every Sunday at
-  04:00 (`UPDATE_WEEKDAY`, `UPDATE_HOUR`). Set `UPDATE_ALL_HOMEBREW=true` to upgrade every Homebrew app.
-  After the update, dangling Docker images (untagged, unused) are removed; `UPDATE_PRUNE_IMAGES=false` keeps them.
-  Immich is pinned; you get a message when a new release exists. macOS updates download automatically and wait for you, because each one
-  restarts into the FileVault unlock screen.
 
 ## What `apply` changes on your Mac
 
