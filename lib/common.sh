@@ -82,3 +82,13 @@ launchd_load() {
   launchctl bootout "$target" "$2" 2>/dev/null || true
   launchctl bootstrap "$target" "$2"
 }
+
+# docker compose pull with 3 attempts; registries sometimes rate-limit parallel pulls. If it still fails, continue
+# with the images already on this Mac (up -d then fails on its own if an image is really missing).
+compose_pull() {
+  for attempt in 1 2 3; do
+    docker compose pull -q && return 0
+    warn "image pull failed (attempt $attempt of 3)"; sleep $((attempt * 20))
+  done
+  warn "continuing with local images"
+}

@@ -25,6 +25,6 @@ mkdir -p "$PHOTOS_DIR" "$IMMICH_DB_DIR"
 parent="$(dirname "$PHOTOS_DIR")"
 case "$parent" in "$HC_HOME"/*) chmod 700 "$parent" ;; esac
 cd "$dir"
-docker compose pull -q
+compose_pull
 docker compose up -d
 log "photos: Immich $IMMICH_VERSION on http://localhost:2283 (photos in $PHOTOS_DIR)"

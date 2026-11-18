@@ -60,7 +60,7 @@ if [ ! -f "$qb" ]; then
 fi
 
 cd "$dir"
-docker compose pull -q
+compose_pull
 docker compose up -d --remove-orphans
 
 # API keys appear in each app's config.xml after its first start; keep them in secrets.env for Recyclarr and status.
