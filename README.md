@@ -53,7 +53,7 @@ bin/homecider init && bin/homecider doctor && bin/homecider apply
 | ☁️ | `backup` | Nightly encrypted [restic](https://restic.net) backup to Backblaze B2 or any S3 bucket, 30-day deletion protection, restore test, alert when stale. See [docs/backup.md](docs/backup.md) | off (needs a bucket) |
 | ⬇️ | `downloads` | Request and library management (Seerr, Radarr, Sonarr, Prowlarr, qBittorrent, Maintainerr) with 1080p quality profiles. VPN-only unless you opt in to your home connection. See [docs/downloads.md](docs/downloads.md) | **off** |
 
-HomeCider is designed for use on your home network. It does not configure public internet access or port forwarding, does not use UPnP, and keeps administrative tools bound to localhost.
+HomeCider is designed for use on your home network. It does not configure public internet access or port forwarding, does not use UPnP, and keeps administrative tools bound to localhost. To reach Jellyfin and Immich away from home without exposing them, see [docs/remote-access.md](docs/remote-access.md).
 
 <p align="center">
   <img src="docs/images/immich-demo.jpg" alt="Immich photo timeline in the web app" width="820"/><br/>
@@ -411,6 +411,7 @@ and resets `pmset` to the macOS defaults (sleep on). SSH password login is allow
 | [docs/DESIGN.md](docs/DESIGN.md) | Design decisions |
 | [docs/backup.md](docs/backup.md) | Setting up and restoring the `backup` module |
 | [docs/downloads.md](docs/downloads.md) | Setting up the `downloads` module and its VPN |
+| [docs/remote-access.md](docs/remote-access.md) | Reaching Jellyfin and Immich away from home with Tailscale |
 | [homecider.env.example](homecider.env.example) | Every setting, with defaults |
 
 ## Contributing
