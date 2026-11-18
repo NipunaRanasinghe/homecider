@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="530" viewBox="0 0 660 530" role="img" aria-label="Output of bin/homecider status">
+<rect width="660" height="530" rx="10" fill="#0D1117" stroke="#30363D"/>
+<circle cx="22" cy="20" r="6" fill="#FF5F57"/><circle cx="42" cy="20" r="6" fill="#FEBC2E"/><circle cx="62" cy="20" r="6" fill="#28C840"/>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5">
+<text x="22" y="58" fill="#7EE787" xml:space="preserve">$ bin/homecider status</text>
+<text x="22" y="78" fill="#E6EDF3" xml:space="preserve">HomeCider 0.1.0-dev  ·  modules: core media photos downloads</text>
+<text x="22" y="98" fill="#E6EDF3" xml:space="preserve">Disk: 46% used, 240Gi free</text>
+<text x="22" y="118" fill="#E6EDF3" xml:space="preserve">Battery: 80%; discharging</text>
+<text x="22" y="138" fill="#E6EDF3" xml:space="preserve">Jobs:</text>
+<text x="22" y="158" fill="#E6EDF3" xml:space="preserve">  alerts       loaded</text>
+<text x="22" y="178" fill="#E6EDF3" xml:space="preserve">  update       loaded</text>
+<text x="22" y="198" fill="#E6EDF3" xml:space="preserve">  low-battery  loaded</text>
+<text x="22" y="218" fill="#E6EDF3" xml:space="preserve">Services:</text>
+<text x="22" y="238" fill="#E6EDF3" xml:space="preserve">  jellyfin     up  http://localhost:8096</text>
+<text x="22" y="258" fill="#E6EDF3" xml:space="preserve">  immich       up  http://localhost:2283</text>
+<text x="22" y="278" fill="#E6EDF3" xml:space="preserve">Containers:</text>
+<text x="22" y="298" fill="#E6EDF3" xml:space="preserve">  immich_server Up About an hour (healthy)</text>
+<text x="22" y="318" fill="#E6EDF3" xml:space="preserve">  immich_machine_learning       Up About an hour (healthy)</text>
+<text x="22" y="338" fill="#E6EDF3" xml:space="preserve">  maintainerr   Up About an hour (healthy)</text>
+<text x="22" y="358" fill="#E6EDF3" xml:space="preserve">  radarr        Up About an hour</text>
+<text x="22" y="378" fill="#E6EDF3" xml:space="preserve">  qbittorrent   Up About an hour</text>
+<text x="22" y="398" fill="#E6EDF3" xml:space="preserve">  sonarr        Up About an hour</text>
+<text x="22" y="418" fill="#E6EDF3" xml:space="preserve">  prowlarr      Up About an hour</text>
+<text x="22" y="438" fill="#E6EDF3" xml:space="preserve">  seerr Up About an hour</text>
+<text x="22" y="458" fill="#E6EDF3" xml:space="preserve">  immich_postgres       Up 2 days (healthy)</text>
+<text x="22" y="478" fill="#E6EDF3" xml:space="preserve">  immich_redis  Up 2 days (healthy)</text>
+<text x="22" y="498" fill="#E6EDF3" xml:space="preserve">Active alerts:  on-battery</text>
+</g>
+</svg>
