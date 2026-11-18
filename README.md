@@ -68,6 +68,9 @@ bin/homecider apply     # after editing homecider.env or pulling a new version
 
 - **Alerts** arrive on your phone when the disk is above 85%, the Mac runs on battery, a service is down for
   10 minutes, or a macOS update is waiting.
+- **Vaults** for archives you rarely open (old phone backups, documents): `homecider vault create NAME` makes an
+  AES-256 encrypted disk image in `~/Vault`; while closed it is unreadable, even to programs running as you.
+  The `backup` module backs vaults up as they are, still encrypted.
 - **Updates**: Homebrew apps and container images update every Sunday at 04:00. Immich is pinned; you get
   a message when a new release exists. macOS updates download automatically and wait for you, because each one
   restarts into the FileVault unlock screen.
