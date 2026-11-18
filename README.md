@@ -14,6 +14,7 @@ and kept on your home network.
 | `core` | Key-only SSH, no sleep (lid closed too), firewall and stealth mode, sharing services off, macOS updates download-only, push alerts (disk, battery, services, updates), weekly app and container updates, clean shutdown on low battery (laptops) | always on |
 | `media` | [Jellyfin](https://jellyfin.org) running natively with Apple VideoToolbox hardware transcoding, as a hidden user that can read only your media folder | on |
 | `photos` | [Immich](https://immich.app) photo and video backup from your phone, pinned version | on |
+| `backup` | Nightly encrypted [restic](https://restic.net) backup to Backblaze B2 or any S3 bucket, 30-day deletion protection, restore test, alert when stale | off (needs a bucket) |
 | `downloads` | Request and library management (Seerr, Radarr, Sonarr, Prowlarr, qBittorrent, Maintainerr) with 1080p quality profiles. VPN-only unless you opt in to your home connection | **off** |
 
 Nothing is exposed to the internet: no port forwards, no UPnP, and admin-only tools listen on localhost.

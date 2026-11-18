@@ -5,11 +5,13 @@
 #   homecider status   show services, jobs, disk and battery
 #   homecider doctor   check prerequisites and configuration
 #   homecider leaktest check that downloads go through the VPN (downloads module)
+#   homecider backup now | snapshots | restore-test     (backup module)
+#   homecider secret set NAME    store a secret in secrets.env without echoing it
 set -eu
 HC_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 HC_VERSION=0.1.0-dev
 
-usage() { sed -n '2,7p' "$0" | sed 's/^# //'; }
+usage() { sed -n '2,9p' "$0" | sed 's/^# //'; }
 
 cmd_init() {
   if [ -f "$HC_ROOT/homecider.env" ]; then echo "homecider.env already exists; edit it, then run: homecider apply"; return; fi
@@ -74,7 +76,8 @@ cmd_status() {
   echo "Disk: $(df -h /System/Volumes/Data | awk 'NR==2{print $5" used, "$4" free"}')"
   has_battery && echo "Battery: $(pmset -g batt | grep -Eo '[0-9]+%;[^;]*' | head -1)"
   echo "Jobs:"
-  for j in alerts update; do printf '  %-12s %s\n' "$j" "$(launchctl print "gui/$HC_UID/$HC_LABEL.$j" >/dev/null 2>&1 && echo loaded || echo MISSING)"; done
+  jobs="alerts update"; has_module backup && jobs="$jobs backup"
+  for j in $jobs; do printf '  %-12s %s\n' "$j" "$(launchctl print "gui/$HC_UID/$HC_LABEL.$j" >/dev/null 2>&1 && echo loaded || echo MISSING)"; done
   has_battery && printf '  %-12s %s\n' low-battery "$(launchctl print "system/$HC_LABEL.low-battery" >/dev/null 2>&1 && echo loaded || echo MISSING)"
   echo "Services:"
   has_module media && printf '  %-12s %s  http://localhost:8096\n' jellyfin "$(up http://localhost:8096/health)"
@@ -84,7 +87,27 @@ cmd_status() {
     docker ps -a --format '{{.Names}}\t{{.Status}}' 2>/dev/null | sed 's/^/  /' || echo "  docker not responding"
   fi
   [ -d "$HC_STATE/alerts" ] && active="$(ls "$HC_STATE/alerts" 2>/dev/null | grep -v '^immich-' || true)"
+  has_module backup && echo "Last backup: $( [ -f "$HC_STATE/backup-ok" ] && date -r "$(cat "$HC_STATE/backup-ok")" '+%Y-%m-%d %H:%M' || echo never)"
   echo "Active alerts: ${active:-none}"
+}
+
+cmd_secret() {
+  [ "${1:-}" = set ] && [ -n "${2:-}" ] || die "usage: homecider secret set NAME"
+  . "$HC_ROOT/lib/common.sh"
+  printf 'Value for %s (not shown): ' "$2"; stty -echo; read -r value; stty echo; echo
+  [ -n "$value" ] || die "empty value"
+  set_secret "$2" "$value"; echo "saved $2 in $HC_SECRETS"
+}
+
+cmd_backup() {
+  . "$HC_ROOT/lib/common.sh"
+  has_module backup || die "add backup to MODULES first"
+  case "${1:-}" in
+    now) sh "$HC_ROOT/modules/backup/run.sh" ;;
+    snapshots) . "$HC_ROOT/modules/backup/env.sh"; restic snapshots ;;
+    restore-test) sh "$HC_ROOT/modules/backup/restore-test.sh" ;;
+    *) die "usage: homecider backup now | snapshots | restore-test" ;;
+  esac
 }
 
 case "${1:-help}" in
@@ -93,6 +116,8 @@ case "${1:-help}" in
   status) cmd_status ;;
   doctor) cmd_doctor ;;
   leaktest) sh "$HC_ROOT/modules/downloads/leak-test.sh" ;;
+  backup) shift; cmd_backup "$@" ;;
+  secret) shift; cmd_secret "$@" ;;
   version|--version) echo "homecider $HC_VERSION" ;;
   help|-h|--help) usage ;;
   *) usage; exit 1 ;;

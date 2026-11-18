@@ -21,7 +21,7 @@
 - [x] `core`, `media`, `photos`, `downloads` modules ported from a working server
 - [x] `homecider init | apply | status | doctor`
 - [x] Gluetun VPN container for `downloads` (qBittorrent and Prowlarr in its network, port forwarding, `homecider leaktest`). Compose config validated; not yet run against a real VPN provider
-- [ ] `backup` module: restic to Backblaze B2 / S3, nightly, 30-day deletion protection (no-delete app key + lifecycle)
+- [x] `backup` module: restic to Backblaze B2 / S3, nightly, 30-day deletion protection (no-delete app key + lifecycle), `homecider backup now | snapshots | restore-test`. Tested with a local repository; not yet against B2
 - [ ] `vault` helper: encrypted disk image for archives (`homecider vault create | open | close`)
 - [ ] Automate the remaining app wiring where an API exists (Seerr, Prowlarr, Jellyfin library refresh)
 - [ ] CI: shellcheck, `homecider doctor` dry run

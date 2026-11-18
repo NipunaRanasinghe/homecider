@@ -47,6 +47,11 @@ if uses_docker; then
   check containers "$(twice containers "$([ -n "$bad" ] && echo 1 || echo 0)")" "Container problem" "$bad"
 fi
 
+if has_module backup; then
+  last="$(cat "$HC_STATE/backup-ok" 2>/dev/null || echo 0)"
+  check backup-stale "$([ $(( $(date +%s) - last )) -gt 129600 ] && echo 1 || echo 0)" "No backup for 36 hours" "Check $HC_LOGS/backup.log or run homecider backup now."
+fi
+
 # macOS update waiting (checked at most once a day; the check is slow).
 stamp="$state/.update-checked"
 if [ -z "$(find "$stamp" -mtime -1 2>/dev/null)" ]; then
