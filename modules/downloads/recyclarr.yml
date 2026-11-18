@@ -7,7 +7,7 @@
 # - Size caps to keep the media folder small, in MB per minute of runtime:
 #   movies max 66 (8 GB for 2 h), preferred 35 (4.2 GB); Bluray min lowered from 50.8 to 17 (2 GB) so smaller encodes qualify.
 #   episodes max 50 (2.2 GB for 45 min), preferred 30 (1.3 GB).
-# Apply with: docker compose run --rm recyclarr sync
+# Applied by homecider apply (Recyclarr runs once per apply).
 radarr:
   movies:
     base_url: http://radarr:7878

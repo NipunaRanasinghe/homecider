@@ -1,14 +1,16 @@
 # Shared helpers, sourced by bin/homecider, module scripts and launchd jobs.
-# The caller sets HC_ROOT (repository root) before sourcing.
+# The caller sets HC_ROOT (code location: a git checkout or Homebrew's libexec) before sourcing.
 
 [ -n "${HC_ROOT:-}" ] || { echo "homecider: HC_ROOT not set" >&2; exit 1; }
-HC_CONFIG="${HC_CONFIG:-$HC_ROOT/homecider.env}"
+# The account that owns the server. Under sudo, SUDO_USER is the person who ran homecider.
+_owner="${SUDO_USER:-$(id -un)}"
+_owner_home="$(dscl . -read "/Users/$_owner" NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
+HC_CONFIG="${HC_CONFIG:-$_owner_home/.config/homecider/homecider.env}"
 [ -f "$HC_CONFIG" ] || { echo "homecider: $HC_CONFIG not found; run: homecider init" >&2; exit 1; }
 # shellcheck disable=SC1090
 . "$HC_CONFIG"
 
-# The account that owns the server. Under sudo, SUDO_USER is the person who ran homecider.
-HC_USER="${HC_USER:-${SUDO_USER:-$(id -un)}}"
+HC_USER="${HC_USER:-$_owner}"
 HC_HOME="$(dscl . -read "/Users/$HC_USER" NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
 [ -n "$HC_HOME" ] || { echo "homecider: user $HC_USER not found" >&2; exit 1; }
 HC_UID="$(id -u "$HC_USER")"
@@ -17,6 +19,9 @@ HC_STATE="$HC_HOME/Library/Application Support/homecider"   # secrets and alert 
 HC_SECRETS="$HC_STATE/secrets.env"
 HC_LOGS="$HC_HOME/Library/Logs/homecider"
 HC_LABEL=io.homecider                                          # launchd label prefix
+HC_COMPOSE="$HC_STATE/compose"                                 # per-module generated .env files (Compose project dirs)
+# Path that survives upgrades, for launchd jobs and Compose: Homebrew's versioned Cellar path becomes opt/.
+HC_ROOT_STABLE="$(echo "$HC_ROOT" | sed 's#/Cellar/homecider/[^/]*/#/opt/homecider/#')"
 # shellcheck disable=SC1090
 [ -f "$HC_SECRETS" ] && . "$HC_SECRETS"
 
@@ -85,10 +90,13 @@ launchd_load() {
 
 # docker compose pull with 3 attempts; registries sometimes rate-limit parallel pulls. If it still fails, continue
 # with the images already on this Mac (up -d then fails on its own if an image is really missing).
-compose_pull() {
+compose_pull() {   # module
   for attempt in 1 2 3; do
-    docker compose pull -q && return 0
+    dc "$1" pull -q && return 0
     warn "image pull failed (attempt $attempt of 3)"; sleep $((attempt * 20))
   done
   warn "continuing with local images"
 }
+
+# docker compose for a module: project directory in HC_COMPOSE/<module> (holds .env, which names the compose files).
+dc() { m="$1"; shift; docker compose --project-directory "$HC_COMPOSE/$m" "$@"; }

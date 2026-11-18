@@ -5,21 +5,22 @@
 # DOWNLOADS_ALLOW_HOME_IP=true: every peer and copyright monitor then sees the home IP address.
 set -eu
 HC_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; . "$HC_ROOT/lib/common.sh"
-dir="$HC_ROOT/modules/downloads"
+dir="$HC_ROOT_STABLE/modules/downloads"
+proj="$HC_COMPOSE/downloads"; mkdir -p "$proj"; chmod 700 "$HC_STATE" "$HC_COMPOSE"
 cfg="$DOWNLOADS_CONFIG_DIR"
 
 # Gluetun settings (see docs/downloads.md). Any of these may live in homecider.env or secrets.env.
 VPN_VARS="VPN_SERVICE_PROVIDER VPN_TYPE WIREGUARD_PRIVATE_KEY WIREGUARD_PRESHARED_KEY WIREGUARD_ADDRESSES
   OPENVPN_USER OPENVPN_PASSWORD SERVER_COUNTRIES SERVER_CITIES SERVER_HOSTNAMES VPN_PORT_FORWARDING VPN_PORT_FORWARDING_PROVIDER"
-compose_files=docker-compose.yml
+compose_files="$dir/docker-compose.yml"
 case "$DOWNLOADS_NETWORK" in
   vpn)  qbit_if=tun0
         if [ -n "${VPN_SERVICE_PROVIDER:-}" ]; then
-          compose_files=docker-compose.yml:docker-compose.vpn.yml
-          ( umask 077; : > "$dir/vpn.env"
-            for v in $VPN_VARS; do eval "val=\${$v:-}"; [ -n "$val" ] && printf '%s=%s\n' "$v" "$val" >> "$dir/vpn.env"; done )
+          compose_files="$dir/docker-compose.yml:$dir/docker-compose.vpn.yml"
+          ( umask 077; : > "$proj/vpn.env"
+            for v in $VPN_VARS; do eval "val=\${$v:-}"; [ -n "$val" ] && printf '%s=%s\n' "$v" "$val" >> "$proj/vpn.env"; done )
         else
-          rm -f "$dir/vpn.env"
+          rm -f "$proj/vpn.env"
           warn "no VPN configured (VPN_SERVICE_PROVIDER): qBittorrent stays offline; see docs/downloads.md"
         fi ;;
   home) [ "$DOWNLOADS_ALLOW_HOME_IP" = true ] ||
@@ -31,7 +32,7 @@ case "$cfg$MEDIA_DIR" in *" "*) die "DOWNLOADS_CONFIG_DIR and MEDIA_DIR must not
 
 ensure_secret QBIT_PASSWORD openssl rand -hex 16
 write_env() {
-  ( umask 077; cat > "$dir/.env" <<EOT
+  ( umask 077; cat > "$proj/.env" <<EOT
 # Written by homecider apply; edit homecider.env instead.
 COMPOSE_FILE=$compose_files
 PUID=$HC_UID
@@ -59,9 +60,8 @@ if [ ! -f "$qb" ]; then
   printf '[BitTorrent]\nSession\\Interface=tun0\n\n[Network]\nPortForwardingEnabled=false\n' > "$qb"
 fi
 
-cd "$dir"
-compose_pull
-docker compose up -d --remove-orphans
+compose_pull downloads
+dc downloads up -d --remove-orphans
 
 # API keys appear in each app's config.xml after its first start; keep them in secrets.env for Recyclarr and status.
 for app in radarr sonarr prowlarr; do
@@ -75,7 +75,7 @@ done
 write_env
 
 sh "$dir/qbittorrent-setup.sh"
-docker compose run --rm -T recyclarr sync < /dev/null
+dc downloads run --rm -T recyclarr sync < /dev/null
 
 # Cleanup rules need Maintainerr connected to Jellyfin, Radarr and Sonarr (done once in its web UI).
 if curl -fsS -m 10 http://localhost:6246/api/media-server/libraries 2>/dev/null | grep -q '"Movies"'; then

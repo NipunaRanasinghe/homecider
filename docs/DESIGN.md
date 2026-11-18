@@ -6,7 +6,7 @@
 | Containers | OrbStack | Lower RAM and CPU use than Docker Desktop |
 | Jellyfin | Native (Homebrew cask), hidden user `_jellyfin`, LaunchDaemon | Containers on macOS cannot use VideoToolbox; a separate user keeps a media-file exploit away from personal files |
 | Install | `git clone` + one idempotent `homecider` command | One entry point; re-running repairs drift; no `curl \| sh` |
-| Configuration | One `homecider.env` (untracked); secrets generated into `~/Library/Application Support/homecider/secrets.env` | Personal values never enter the repository |
+| Configuration | `~/.config/homecider/homecider.env`; secrets and generated Compose `.env` files in `~/Library/Application Support/homecider/` (mode 700/600) | The code folder stays read-only (git checkout or Homebrew); personal values never enter the repository |
 | Modules | `core` always; `media`, `photos` on; `downloads` opt-in | Each module can be reviewed and turned off |
 | Downloads network | VPN-only by default (qBittorrent bound to `tun0`); home connection only with `DOWNLOADS_ALLOW_HOME_IP=true` | Safe default; the home IP is exposed only by explicit choice |
 | Access | Home network only; no port forwards, no UPnP; tools without a login listen on 127.0.0.1 | Nothing reachable from the internet |

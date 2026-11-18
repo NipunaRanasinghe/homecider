@@ -2,8 +2,8 @@
 # Apply qBittorrent settings through its web API. Run by user.sh after the container starts. No sudo.
 # Logs in with QBIT_PASSWORD from .env (written by user.sh), or on first start with the temporary password from the container log.
 set -eu
-dir="$(cd "$(dirname "$0")" && pwd)"
-. "$dir/.env"
+HC_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; . "$HC_ROOT/lib/common.sh"
+. "$HC_COMPOSE/downloads/.env"
 U=http://127.0.0.1:8080
 J="$(mktemp)"; trap 'rm -f "$J"' EXIT
 for i in $(seq 1 30); do curl -s -o /dev/null "$U" && break; sleep 2; done

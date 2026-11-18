@@ -30,7 +30,7 @@ agent() {   # label, script, schedule XML, log name
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
   <key>Label</key><string>$HC_LABEL.$1</string>
-  <key>ProgramArguments</key><array><string>/bin/sh</string><string>$HC_ROOT/modules/core/$2</string></array>
+  <key>ProgramArguments</key><array><string>/bin/sh</string><string>$HC_ROOT_STABLE/modules/core/$2</string></array>
   $3
   <key>StandardOutPath</key><string>$HC_LOGS/$1.log</string>
   <key>StandardErrorPath</key><string>$HC_LOGS/$1.log</string>

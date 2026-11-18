@@ -22,7 +22,7 @@ if uses_docker; then
   images_before="$(images)"
   for m in photos downloads; do
     has_module "$m" || continue
-    (cd "$HC_ROOT/modules/$m" && docker compose pull -q && docker compose up -d) || failed="$failed $m"
+    { dc "$m" pull -q && dc "$m" up -d; } || failed="$failed $m"
   done
   docker image prune -f >/dev/null
   images_changed="$(images | grep -vxF "$images_before" | cut -d' ' -f1 | tr -d / | tr '\n' ' ')"

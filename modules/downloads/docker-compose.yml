@@ -93,7 +93,7 @@ services:
       - 127.0.0.1:8080:8080
     restart: unless-stopped
 
-  # Not a running service: applies recyclarr.yml to Radarr and Sonarr. Run: docker compose run --rm recyclarr sync
+  # Not a running service: applies recyclarr.yml to Radarr and Sonarr. homecider apply runs it once
   recyclarr:
     image: recyclarr/recyclarr:8
     container_name: recyclarr

@@ -9,16 +9,19 @@
 #   homecider secret set NAME    store a secret in secrets.env without echoing it
 #   homecider vault create | open | close | list   encrypted disk images for archives
 set -eu
-HC_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# Follow symlinks (Homebrew links bin/homecider into /opt/homebrew/bin).
+HC_ROOT="$(cd "$(dirname "$(realpath "$0")")/.." && pwd)"
 HC_VERSION=0.1.0-dev
 
-usage() { sed -n '2,10p' "$0" | sed 's/^# //'; }
+usage() { sed -n '2,10p' "$HC_ROOT/bin/homecider" | sed 's/^# //'; }
 
 cmd_init() {
-  if [ -f "$HC_ROOT/homecider.env" ]; then echo "homecider.env already exists; edit it, then run: homecider apply"; return; fi
-  sed "s#^TZ=.*#TZ=$(readlink /etc/localtime | sed 's#.*/zoneinfo/##')#" "$HC_ROOT/homecider.env.example" > "$HC_ROOT/homecider.env"
-  chmod 600 "$HC_ROOT/homecider.env"
-  echo "Wrote $HC_ROOT/homecider.env. Review MODULES and paths, then run: homecider apply"
+  cfg="${HC_CONFIG:-$HOME/.config/homecider/homecider.env}"
+  if [ -f "$cfg" ]; then echo "$cfg already exists; edit it, then run: homecider apply"; return; fi
+  mkdir -p "$(dirname "$cfg")"
+  sed "s#^TZ=.*#TZ=$(readlink /etc/localtime | sed 's#.*/zoneinfo/##')#" "$HC_ROOT/homecider.env.example" > "$cfg"
+  chmod 600 "$cfg"
+  echo "Wrote $cfg. Review MODULES and paths, then run: homecider apply"
 }
 
 cmd_doctor() {

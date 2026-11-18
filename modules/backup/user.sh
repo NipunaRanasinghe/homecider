@@ -16,7 +16,7 @@ cat > "$plist" <<EOT
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
   <key>Label</key><string>$HC_LABEL.backup</string>
-  <key>ProgramArguments</key><array><string>/bin/sh</string><string>$HC_ROOT/modules/backup/run.sh</string></array>
+  <key>ProgramArguments</key><array><string>/bin/sh</string><string>$HC_ROOT_STABLE/modules/backup/run.sh</string></array>
   <key>StartCalendarInterval</key><dict><key>Hour</key><integer>$BACKUP_HOUR</integer><key>Minute</key><integer>30</integer></dict>
   <key>LowPriorityIO</key><true/>
   <key>Nice</key><integer>10</integer>

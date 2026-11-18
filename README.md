@@ -142,7 +142,7 @@ On the Mac that will be the server:
 ```sh
 git clone https://github.com/NipunaRanasinghe/homecider.git ~/homecider
 cd ~/homecider
-bin/homecider init      # writes homecider.env; review MODULES and paths
+bin/homecider init      # writes ~/.config/homecider/homecider.env; review MODULES and paths
 bin/homecider doctor    # checks prerequisites
 bin/homecider apply     # sets everything up; asks for your password once for system changes
 ```
@@ -186,8 +186,9 @@ So you can review it before running:
 - `media`: hidden user `_jellyfin` (UID 450), LaunchDaemon `io.homecider.jellyfin`, data in
   `/Library/Application Support/jellyfin`, a sudoers rule that lets you restart Jellyfin without a password.
   Your home folder becomes `750` and other home folders readable by other users become private.
-- Secrets (ntfy topic, database and app passwords) in `~/Library/Application Support/homecider/secrets.env`,
-  mode 600, never in the repository.
+- Your settings in `~/.config/homecider/homecider.env`. Secrets (ntfy topic, database and app passwords) in
+  `~/Library/Application Support/homecider/secrets.env` (mode 600), generated Compose settings in
+  `~/Library/Application Support/homecider/compose/`. Nothing is written into the code folder.
 
 ## Contributing
 
