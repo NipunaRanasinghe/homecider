@@ -1,8 +1,11 @@
 # HomeCider
 
-**Home-brewed server for your spare Mac.** HomeCider turns an Apple Silicon Mac (a MacBook with the lid
-closed, or a Mac mini) into a private home server for films, shows and photo backup, set up by one command
-and kept on your home network.
+**Turn any Mac into a private home server.** HomeCider sets up films, shows and photo backup with one
+command and keeps everything on your home network.
+
+Works on Apple Silicon Macs (M1 or later): MacBook (lid closed), Mac mini, iMac or Mac Studio. Intel Macs are
+not supported. Use a Mac dedicated to this: HomeCider changes system settings such as sleep, SSH and file
+permissions.
 
 > Status: early development (0.1.0-dev). Tested on a MacBook Air M1 with the current macOS.
 > Other Apple Silicon Macs should work; reports are welcome.

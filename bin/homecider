@@ -1,5 +1,5 @@
 #!/bin/sh
-# homecider: turn a spare Apple Silicon Mac into a home server.
+# homecider: turn any Mac (Apple Silicon) into a private home server.
 #   homecider init     create homecider.env from the example
 #   homecider apply    set up every enabled module (asks for sudo once); safe to re-run
 #   homecider status   show services, jobs, disk and battery
