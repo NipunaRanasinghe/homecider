@@ -91,7 +91,11 @@ cmd_status() {
     echo "Containers:"
     docker ps -a --format '{{.Names}}\t{{.Status}}' 2>/dev/null | sed 's/^/  /' || echo "  docker not responding"
   fi
-  [ -d "$HC_STATE/alerts" ] && active="$(ls "$HC_STATE/alerts" 2>/dev/null | grep -v '^immich-' || true)"
+  active=""
+  for a in "$HC_STATE"/alerts/*; do
+    [ -e "$a" ] || continue
+    case "$(basename "$a")" in immich-*) ;; *) active="$active $(basename "$a")" ;; esac
+  done
   has_module backup && echo "Last backup: $( [ -f "$HC_STATE/backup-ok" ] && date -r "$(cat "$HC_STATE/backup-ok")" '+%Y-%m-%d %H:%M' || echo never)"
   echo "Active alerts: ${active:-none}"
 }

@@ -6,7 +6,7 @@ HC_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; . "$HC_ROOT/lib/common.sh"
 . "$HC_COMPOSE/downloads/.env"
 U=http://127.0.0.1:8080
 J="$(mktemp)"; trap 'rm -f "$J"' EXIT
-for i in $(seq 1 30); do curl -s -o /dev/null "$U" && break; sleep 2; done
+for _ in $(seq 1 30); do curl -s -o /dev/null "$U" && break; sleep 2; done
 login() { curl -s -o /dev/null -w "%{http_code}" -c "$J" --referer "$U" --data-urlencode "username=admin" --data-urlencode "password=$1" "$U/api/v2/auth/login"; }
 tmp="$(docker logs qbittorrent 2>&1 | sed -n 's/.*temporary password is provided for this session: //p' | tail -1)"
 [ "$(login "$QBIT_PASSWORD")" = 204 ] || [ "$(login "$tmp")" = 204 ] || { echo "qBittorrent login failed" >&2; exit 1; }

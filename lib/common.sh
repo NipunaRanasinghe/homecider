@@ -1,5 +1,6 @@
 # Shared helpers, sourced by bin/homecider, module scripts and launchd jobs.
 # The caller sets HC_ROOT (code location: a git checkout or Homebrew's libexec) before sourcing.
+# shellcheck disable=SC2034  # variables defined here are used by the scripts that source this file
 
 [ -n "${HC_ROOT:-}" ] || { echo "homecider: HC_ROOT not set" >&2; exit 1; }
 # The account that owns the server. Under sudo, SUDO_USER is the person who ran homecider.

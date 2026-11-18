@@ -4,5 +4,6 @@
 batt="$(pmset -g batt)"
 echo "$batt" | grep -q "'Battery Power'" || exit 0
 pct="$(echo "$batt" | grep -Eo '[0-9]+%' | head -1 | tr -d '%')"
+# shellcheck disable=SC2170  # @PCT@ is replaced with a number when the file is installed
 [ -n "$pct" ] && [ "$pct" -le @PCT@ ] && shutdown -h now "homecider: battery at ${pct}%"
 exit 0

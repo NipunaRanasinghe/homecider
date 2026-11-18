@@ -8,4 +8,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: shellcheck -s sh bin/homecider lib/common.sh modules/*/*.sh
+      # Warnings and errors fail the build; info-level style notes (e.g. the deliberate A && B || C) do not.
+      - run: shellcheck -s sh -S warning bin/homecider lib/common.sh modules/*/*.sh

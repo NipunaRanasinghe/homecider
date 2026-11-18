@@ -69,7 +69,7 @@ for app in radarr sonarr prowlarr; do
   var="$(echo "$app" | tr a-z A-Z)_API_KEY"
   eval "have=\${$var:-}"
   [ -n "$have" ] && continue
-  for i in $(seq 1 30); do [ -f "$cfg/$app/config.xml" ] && break; sleep 2; done
+  for _ in $(seq 1 30); do [ -f "$cfg/$app/config.xml" ] && break; sleep 2; done
   key="$(sed -n 's:.*<ApiKey>\(.*\)</ApiKey>.*:\1:p' "$cfg/$app/config.xml")"
   [ -n "$key" ] && set_secret "$var" "$key"
 done

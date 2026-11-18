@@ -37,6 +37,7 @@ case "$MEDIA_DIR/" in
   "$HC_HOME"/*)
     media_top="${MEDIA_DIR#"$HC_HOME"/}"; media_top="${media_top%%/*}"
     chmod 750 "$HC_HOME"
+    # shellcheck disable=SC2010  # ls -le is the only way to read the ACL
     ls -led "$HC_HOME" | grep -q "user:$name allow search" || chmod +a "user:$name allow search" "$HC_HOME"
     # Every other home entry readable by other users becomes private (e.g. ~/Photos, ~/Public, dotfolders).
     for e in "$HC_HOME"/* "$HC_HOME"/.[!.]*; do
