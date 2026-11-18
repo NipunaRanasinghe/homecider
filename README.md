@@ -4,8 +4,12 @@
 commands and a short checklist, and keeps everything on your home network.
 
 Works on Apple Silicon Macs (M1 or later): MacBook (lid closed), Mac mini, iMac or Mac Studio. Intel Macs are
-not supported. Use a Mac dedicated to this: HomeCider changes system settings such as sleep, SSH and file
-permissions.
+not supported: Apple no longer releases new macOS versions for them, and HomeCider is tested only on Apple Silicon.
+
+Use a Mac that stays at home and stays on. A dedicated one is best, because HomeCider changes settings for the
+whole Mac: it disables sleep (also with the lid closed), turns off File Sharing and Screen Sharing, makes your
+home folder private to other accounts, upgrades all Homebrew apps every week, and on laptops shuts the Mac down
+at 15% battery.
 
 > Status: early development (0.1.0-dev). Tested on a MacBook Air M1 with the current macOS.
 > Other Apple Silicon Macs should work; reports are welcome.

@@ -2,7 +2,7 @@
 
 | Topic | Decision | Reason |
 |---|---|---|
-| Platform | Apple Silicon only; current and previous macOS release; laptops and desktops | VideoToolbox on every model; Intel needs different transcoding and more testing |
+| Platform | Apple Silicon only; current and previous macOS release; laptops and desktops | VideoToolbox on every model. Intel is excluded because Apple no longer releases new macOS versions for it and there is no Intel Mac to test on; the code changes would be small (the `arm64` check in `doctor`, the `/opt/homebrew` path) |
 | Containers | OrbStack | Lower RAM and CPU use than Docker Desktop |
 | Jellyfin | Native (Homebrew cask), hidden user `_jellyfin`, LaunchDaemon | Containers on macOS cannot use VideoToolbox; a separate user keeps a media-file exploit away from personal files |
 | Install | `git clone` + one idempotent `homecider` command | One entry point; re-running repairs drift; no `curl \| sh` |
