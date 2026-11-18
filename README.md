@@ -21,9 +21,9 @@ Everything stays on your home network.
 [Docs](#documentation) ·
 [Contributing](#contributing)
 
-<img src="docs/images/status.svg" alt="Output of bin/homecider status" width="660"/>
+<img src="docs/images/seerr-discover.jpg" alt="Seerr Discover page listing trending and popular films and shows" width="860"/>
 
-<sub>Output of <code>bin/homecider status</code> on a MacBook Air M1 with <code>core</code>, <code>media</code>, <code>photos</code> and <code>downloads</code> enabled.</sub>
+<sub>Seerr's Discover page, where people at home request films and shows (<code>downloads</code> module, off by default).</sub>
 
 </div>
 
@@ -57,8 +57,8 @@ bin/homecider init && bin/homecider doctor && bin/homecider apply
 Nothing is exposed to the internet: no port forwards, no UPnP, and admin-only tools listen on localhost.
 
 <p align="center">
-  <img src="docs/images/seerr-discover.jpg" alt="Seerr Discover page listing trending and popular films and shows" width="820"/><br/>
-  <sub>Seerr's Discover page, where people at home request films and shows (<code>downloads</code> module, off by default).</sub>
+  <img src="docs/images/immich-demo.jpg" alt="Immich photo timeline in the web app" width="820"/><br/>
+  <sub>Immich's photo timeline (<code>photos</code> module). Screenshot of Immich's public demo at <a href="https://demo.immich.app">demo.immich.app</a>, not of a HomeCider server.</sub>
 </p>
 
 ### Why macOS and not Linux
@@ -135,6 +135,11 @@ bin/homecider apply     # sets everything up; asks for your password once for sy
 | `bin/homecider leaktest` | Checks that downloads go through the VPN (`downloads` module) |
 | `bin/homecider secret set NAME` | Stores a secret in `secrets.env` without echoing it |
 | `bin/homecider uninstall` | Stops services and removes system changes; data is kept |
+
+<p align="center">
+  <img src="docs/images/status.svg" alt="Output of bin/homecider status" width="660"/><br/>
+  <sub>Output of <code>bin/homecider status</code> on a MacBook Air M1 with <code>core</code>, <code>media</code>, <code>photos</code> and <code>downloads</code> enabled.</sub>
+</p>
 
 ## Everyday use
 
