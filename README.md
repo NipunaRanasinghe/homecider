@@ -19,6 +19,101 @@ and kept on your home network.
 
 Nothing is exposed to the internet: no port forwards, no UPnP, and admin-only tools listen on localhost.
 
+## How it fits together
+
+```mermaid
+---
+config:
+  look: neo
+  theme: base
+  themeVariables:
+    fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
+    fontSize: "14px"
+    lineColor: "#94A3B8"
+  flowchart:
+    curve: basis
+    nodeSpacing: 22
+    rankSpacing: 34
+    padding: 8
+---
+flowchart TB
+  subgraph clients["👥 Home network devices"]
+    direction LR
+    phone(["📱 Phone · Immich app"])
+    screens(["📺 TV · laptop · tablet"])
+    browser(["🖥️ Browser · Seerr"])
+  end
+
+  subgraph mac["💻 Apple Silicon Mac · FileVault · firewall · key-only SSH"]
+    jellyfin("🎬 Jellyfin · media<br/>native, user _jellyfin · VideoToolbox")
+    immich("🖼️ Immich · photos<br/>server · ML · Postgres · Valkey")
+    subgraph get["⬇️ downloads · opt-in · Docker"]
+      seerr("Seerr")
+      arr("Radarr · films<br/>Sonarr · shows")
+      prowlarr("Prowlarr")
+      qbit("qBittorrent 🔒")
+      maintainerr("Maintainerr 🔒")
+      gluetun("Gluetun VPN<br/>kill switch")
+    end
+    subgraph disk["💾 Disk"]
+      direction LR
+      media[("~/Media")]
+      photos[("~/Photos/immich")]
+      vault[("~/Vault 🔐")]
+    end
+    ops("⏱️ core · launchd<br/>alerts · weekly updates · low-battery shutdown · nightly backup")
+  end
+
+  subgraph net["🌐 Internet"]
+    direction LR
+    indexers{{"Indexers · your choice"}}
+    peers{{"Torrent peers"}}
+    ntfy{{"ntfy.sh → phone"}}
+    b2{{"Backblaze B2 / S3 · backup"}}
+  end
+
+  phone -->|Wi-Fi backup| immich --> photos
+  browser -->|request| seerr --> arr
+  prowlarr -->|indexers| arr
+  prowlarr <--> indexers
+  arr --> qbit --> gluetun <-->|VPN tunnel| peers
+  qbit -->|download, hardlink import| media
+  screens -->|stream| jellyfin -->|read only| media
+  arr -.->|refresh| jellyfin
+  maintainerr -.->|watch history| jellyfin
+  maintainerr -.->|delete 7 days after watched| arr
+  ops --> ntfy
+  ops -.->|restic, encrypted| b2
+  photos -.-> ops
+  vault -.-> ops
+
+  classDef client fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E
+  classDef watchc fill:#EDE9FE,stroke:#7C3AED,color:#3B0764
+  classDef getc fill:#FFEDD5,stroke:#EA580C,color:#7C2D12
+  classDef photoc fill:#DCFCE7,stroke:#16A34A,color:#14532D
+  classDef store fill:#F1F5F9,stroke:#475569,color:#0F172A
+  classDef opsc fill:#FEF9C3,stroke:#CA8A04,color:#713F12
+  classDef ext fill:#FFFFFF,stroke:#94A3B8,color:#334155,stroke-dasharray:4 3
+
+  class phone,screens,browser client
+  class jellyfin watchc
+  class seerr,arr,prowlarr,qbit,maintainerr,gluetun getc
+  class immich photoc
+  class media,photos,vault store
+  class ops opsc
+  class peers,indexers,ntfy,b2 ext
+
+  style clients fill:#F0F9FF,stroke:#7DD3FC,color:#0C4A6E
+  style mac fill:#F8FAFC,stroke:#64748B,stroke-width:2px,color:#0F172A
+  style get fill:#FFF7ED,stroke:#FDBA74,color:#7C2D12
+  style disk fill:#F8FAFC,stroke:#CBD5E1,color:#0F172A
+  style net fill:#FFFFFF,stroke:#CBD5E1,stroke-dasharray:5 5,color:#334155
+```
+
+🔒 listens on 127.0.0.1 only (SSH tunnel) · 🔐 encrypted disk image, closed when not in use ·
+solid arrows: requests and data · dotted arrows: automatic background actions.
+Without a VPN configured, qBittorrent sends nothing; the home connection is an explicit opt-in.
+
 ## Why macOS and not Linux
 
 - **Hardware transcoding.** Jellyfin uses VideoToolbox on Apple Silicon; Linux on these Macs has no hardware
@@ -90,6 +185,10 @@ So you can review it before running:
   Your home folder becomes `750` and other home folders readable by other users become private.
 - Secrets (ntfy topic, database and app passwords) in `~/Library/Application Support/homecider/secrets.env`,
   mode 600, never in the repository.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Repository layout
 
