@@ -4,6 +4,7 @@
 #   homecider apply    set up every enabled module (asks for sudo once); safe to re-run
 #   homecider status   show services, jobs, disk and battery
 #   homecider doctor   check prerequisites and configuration
+#   homecider uninstall   stop services and remove system changes; data is kept
 #   homecider leaktest check that downloads go through the VPN (downloads module)
 #   homecider backup now | snapshots | restore-test     (backup module)
 #   homecider secret set NAME    store a secret in secrets.env without echoing it
@@ -13,7 +14,7 @@ set -eu
 HC_ROOT="$(cd "$(dirname "$(realpath "$0")")/.." && pwd)"
 HC_VERSION=0.1.0-dev
 
-usage() { sed -n '2,10p' "$HC_ROOT/bin/homecider" | sed 's/^# //'; }
+usage() { sed -n '2,11p' "$HC_ROOT/bin/homecider" | sed 's/^# //'; }
 
 cmd_init() {
   cfg="${HC_CONFIG:-$HOME/.config/homecider/homecider.env}"
@@ -119,6 +120,7 @@ case "${1:-help}" in
   apply) cmd_apply ;;
   status) cmd_status ;;
   doctor) cmd_doctor ;;
+  uninstall) sh "$HC_ROOT/modules/core/uninstall.sh" ;;
   leaktest) sh "$HC_ROOT/modules/downloads/leak-test.sh" ;;
   backup) shift; cmd_backup "$@" ;;
   secret) shift; cmd_secret "$@" ;;

@@ -57,6 +57,9 @@ uses_docker() { has_module photos || has_module downloads; }
 # Run a command as the server owner (used by root scripts).
 as_user() { if [ "$(id -u)" = 0 ]; then sudo -u "$HC_USER" -H "$@"; else "$@"; fi; }
 
+# Single-quote a value for secrets.env, which is sourced as shell: spaces, $, & and backticks stay literal.
+sq() { printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"; }
+
 # Ensure a secret exists in secrets.env (mode 600); generate it with the given command if missing.
 ensure_secret() {
   name="$1"; shift
@@ -64,13 +67,13 @@ ensure_secret() {
   [ -n "$current" ] && return 0
   value="$("$@")"
   mkdir -p "$HC_STATE"
-  ( umask 077; printf '%s=%s\n' "$name" "$value" >> "$HC_SECRETS" )
+  ( umask 077; printf '%s=%s\n' "$name" "$(sq "$value")" >> "$HC_SECRETS" )
   eval "$name=\$value"
 }
 set_secret() {   # name value: add or replace
   mkdir -p "$HC_STATE"; touch "$HC_SECRETS"; chmod 600 "$HC_SECRETS"
   grep -v "^$1=" "$HC_SECRETS" > "$HC_SECRETS.tmp" || true
-  printf '%s=%s\n' "$1" "$2" >> "$HC_SECRETS.tmp"
+  printf '%s=%s\n' "$1" "$(sq "$2")" >> "$HC_SECRETS.tmp"
   mv "$HC_SECRETS.tmp" "$HC_SECRETS"; chmod 600 "$HC_SECRETS"
   eval "$1=\$2"
 }

@@ -1,7 +1,7 @@
 # HomeCider
 
-**Turn any Mac into a private home server.** HomeCider sets up films, shows and photo backup with one
-command and keeps everything on your home network.
+**Turn any Mac into a private home server.** HomeCider sets up films, shows and photo backup with three
+commands and a short checklist, and keeps everything on your home network.
 
 Works on Apple Silicon Macs (M1 or later): MacBook (lid closed), Mac mini, iMac or Mac Studio. Intel Macs are
 not supported. Use a Mac dedicated to this: HomeCider changes system settings such as sleep, SSH and file
@@ -189,6 +189,20 @@ So you can review it before running:
 - Your settings in `~/.config/homecider/homecider.env`. Secrets (ntfy topic, database and app passwords) in
   `~/Library/Application Support/homecider/secrets.env` (mode 600), generated Compose settings in
   `~/Library/Application Support/homecider/compose/`. Nothing is written into the code folder.
+
+## Uninstall
+
+```sh
+bin/homecider uninstall
+```
+
+Stops the containers, removes the launchd jobs, the SSH config file, the sudoers rule and the `_jellyfin` user,
+and resets `pmset` to the macOS defaults (sleep on). SSH password login is allowed again.
+
+- **Kept**: media, photos, app data, Jellyfin data, vaults, `homecider.env`, `secrets.env`, the backup repository
+  and the Homebrew apps (`brew uninstall --cask orbstack jellyfin` removes them).
+- **Not changed back**: firewall and stealth mode, sharing services (off), the macOS update policy and
+  home-folder permissions. HomeCider does not record their values before `apply`; change them in System Settings.
 
 ## Contributing
 
