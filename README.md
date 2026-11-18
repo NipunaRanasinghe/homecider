@@ -2,14 +2,13 @@
 
 <h1><img src="docs/images/logo.png" alt="" width="52" align="absmiddle"/> HomeCider</h1>
 
-**A complete, self-hosted home server built on Apple Silicon.**
+**A self-hosted home server for Apple Silicon.**
 
 <img src="docs/images/banner.jpg" alt="HomeCider: media streaming, photo management, system security, encrypted backups and media downloads" width="900"/>
 
-HomeCider automates the setup and management of a private home server on macOS, bringing together
-media streaming, photo management, encrypted backups, and system security.
+HomeCider helps you turn an Apple Silicon Mac into a private home server. It brings together media streaming, photo and video backups, encrypted off-site backups, and system-level security in one automated setup.
 
-Built on proven open-source projects, automated maintenance, and privacy at its core.
+It builds on established open-source projects and handles the routine work of keeping your services running and up to date.
 
 [![shellcheck](https://github.com/NipunaRanasinghe/homecider/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/NipunaRanasinghe/homecider/actions/workflows/shellcheck.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -54,7 +53,7 @@ bin/homecider init && bin/homecider doctor && bin/homecider apply
 | ☁️ | `backup` | Nightly encrypted [restic](https://restic.net) backup to Backblaze B2 or any S3 bucket, 30-day deletion protection, restore test, alert when stale. See [docs/backup.md](docs/backup.md) | off (needs a bucket) |
 | ⬇️ | `downloads` | Request and library management (Seerr, Radarr, Sonarr, Prowlarr, qBittorrent, Maintainerr) with 1080p quality profiles. VPN-only unless you opt in to your home connection. See [docs/downloads.md](docs/downloads.md) | **off** |
 
-Nothing is exposed to the internet: no port forwards, no UPnP, and admin-only tools listen on localhost.
+HomeCider is designed for use on your home network. It does not configure public internet access or port forwarding, does not use UPnP, and keeps administrative tools bound to localhost.
 
 <p align="center">
   <img src="docs/images/immich-demo.jpg" alt="Immich photo timeline in the web app" width="820"/><br/>
@@ -78,7 +77,7 @@ Jellyfin runs outside Docker because containers on macOS cannot use VideoToolbox
 
 ## Before you install
 
-Use a Mac that stays at home and stays on. A dedicated one is best, because HomeCider changes settings for the
+HomeCider is intended for a Mac that stays at home and is available most of the time. A dedicated machine is recommended because HomeCider changes settings across the
 whole Mac: it disables sleep (also with the lid closed), turns off File Sharing and Screen Sharing, makes your
 home folder private to other accounts, upgrades its own Homebrew apps every week, and on laptops shuts the Mac down
 at 15% battery (`BATTERY_SHUTDOWN_PCT`). Every setting and its default is in
@@ -102,7 +101,7 @@ The full list of system changes is in [What `apply` changes on your Mac](#what-a
 
 ## Install
 
-On the Mac that will be the server:
+Run these commands on the Mac you want to use as your server:
 
 ```sh
 git clone https://github.com/NipunaRanasinghe/homecider.git ~/homecider
@@ -112,7 +111,7 @@ bin/homecider doctor    # checks prerequisites
 bin/homecider apply     # sets everything up; asks for your password once for system changes
 ```
 
-`apply` is safe to re-run: after changing `homecider.env`, after `git pull`, or to repair a setting.
+`apply` is designed to be idempotent. You can run it again after changing `homecider.env`, pulling updates with `git pull`, or to reapply a setting.
 
 ### First-time checklist
 
@@ -416,13 +415,13 @@ and resets `pmset` to the macOS defaults (sleep on). SSH password login is allow
 
 ## Contributing
 
-Bug reports and small, focused pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for what to
-include in an issue and how to test a change. Report security issues through GitHub's private vulnerability
-reporting, not a public issue.
+Contributions are welcome. If you find a bug or have an improvement, please open an issue or submit a focused pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for issue details and testing guidance.
+
+For security vulnerabilities, use GitHub's private vulnerability reporting rather than opening a public issue.
 
 ## Third-party components
 
-HomeCider installs and configures software from other projects; each keeps its own license.
+HomeCider installs and configures software maintained by other projects. Each component remains subject to its own license.
 `modules/photos/docker-compose.yml` and `example.env` are Immich's official files (AGPL-3.0), unmodified.
 Container images belong to their projects (Immich, LinuxServer.io, Seerr, Maintainerr, Recyclarr).
 Quality profiles come from [TRaSH Guides](https://trash-guides.info) via Recyclarr.
