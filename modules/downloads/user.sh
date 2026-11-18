@@ -35,6 +35,7 @@ write_env() {
   ( umask 077; cat > "$proj/.env" <<EOT
 # Written by homecider apply; edit homecider.env instead.
 COMPOSE_FILE=$compose_files
+MODULE_DIR=$dir
 PUID=$HC_UID
 PGID=$HC_GID
 TZ=$TZ

@@ -106,4 +106,4 @@ services:
       - SONARR_API_KEY=${SONARR_API_KEY}
     volumes:
       - ${CONFIG_ROOT}/recyclarr:/config
-      - ./recyclarr.yml:/config/recyclarr.yml:ro
+      - ${MODULE_DIR}/recyclarr.yml:/config/recyclarr.yml:ro
