@@ -1,0 +1,4 @@
+homecider.env
+modules/*/.env
+.DS_Store
+__pycache__/

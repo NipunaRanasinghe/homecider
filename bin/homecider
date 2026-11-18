@@ -1,0 +1,97 @@
+#!/bin/sh
+# homecider: turn a spare Apple Silicon Mac into a home server.
+#   homecider init     create homecider.env from the example
+#   homecider apply    set up every enabled module (asks for sudo once); safe to re-run
+#   homecider status   show services, jobs, disk and battery
+#   homecider doctor   check prerequisites and configuration
+set -eu
+HC_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+HC_VERSION=0.1.0-dev
+
+usage() { sed -n '2,6p' "$0" | sed 's/^# //'; }
+
+cmd_init() {
+  if [ -f "$HC_ROOT/homecider.env" ]; then echo "homecider.env already exists; edit it, then run: homecider apply"; return; fi
+  sed "s#^TZ=.*#TZ=$(readlink /etc/localtime | sed 's#.*/zoneinfo/##')#" "$HC_ROOT/homecider.env.example" > "$HC_ROOT/homecider.env"
+  chmod 600 "$HC_ROOT/homecider.env"
+  echo "Wrote $HC_ROOT/homecider.env. Review MODULES and paths, then run: homecider apply"
+}
+
+cmd_doctor() {
+  . "$HC_ROOT/lib/common.sh"
+  ok=0
+  pass() { printf '  ok    %s\n' "$*"; }
+  fail() { printf '  FAIL  %s\n' "$*"; ok=1; }
+  note() { printf '  note  %s\n' "$*"; }
+  [ "$(uname -m)" = arm64 ] && pass "Apple Silicon" || fail "not Apple Silicon (unsupported)"
+  v="$(sw_vers -productVersion)"; pass "macOS $v"
+  [ "$(id -un)" = "$HC_USER" ] && pass "running as $HC_USER" || fail "run as $HC_USER, not $(id -un)"
+  fdesetup status | grep -q "On" && pass "FileVault on" || note "FileVault off: a stolen Mac exposes all data"
+  command -v brew >/dev/null && pass "Homebrew" || fail "Homebrew missing: https://brew.sh"
+  grep -q 'ssh-' "$HC_HOME/.ssh/authorized_keys" 2>/dev/null && pass "SSH key in authorized_keys" ||
+    fail "no SSH key in ~/.ssh/authorized_keys (apply turns off password login)"
+  nc -z -G 2 localhost 22 2>/dev/null && pass "Remote Login (SSH) on" || fail "Remote Login (SSH) off: System Settings > General > Sharing"
+  for m in $MODULES; do [ -d "$HC_ROOT/modules/$m" ] && pass "module $m" || fail "unknown module $m"; done
+  has_module core || fail "MODULES must include core"
+  if uses_docker; then
+    [ -x /Applications/OrbStack.app/Contents/MacOS/xbin/docker ] && pass "OrbStack" || note "OrbStack will be installed by apply"
+  fi
+  has_battery && note "battery present: low-battery shutdown at ${BATTERY_SHUTDOWN_PCT}%; set the charge limit in System Settings > Battery"
+  if has_module downloads; then
+    [ "$DOWNLOADS_NETWORK" = vpn ] && note "downloads: VPN-only; nothing downloads until a VPN is configured" ||
+      note "downloads: home connection; your IP is visible to peers"
+  fi
+  return $ok
+}
+
+cmd_apply() {
+  . "$HC_ROOT/lib/common.sh"
+  [ "$(id -u)" != 0 ] || die "run apply as your user, not with sudo (it asks for sudo itself)"
+  cmd_doctor || die "fix the FAIL items above first"
+  mkdir -p "$HC_STATE" "$HC_LOGS"; chmod 700 "$HC_STATE"
+
+  # Apps from Homebrew (as the user).
+  casks=""; uses_docker && casks="$casks orbstack"; has_module media && casks="$casks jellyfin"
+  for c in $casks; do brew list --cask "$c" >/dev/null 2>&1 || brew install --cask "$c"; done
+
+  # Root parts, under one sudo prompt.
+  roots=""; for m in $MODULES; do [ -f "$HC_ROOT/modules/$m/root.sh" ] && roots="$roots $m"; done
+  log "root steps:$roots (sudo)"
+  sudo sh -c 'for m in '"$roots"'; do sh "'"$HC_ROOT"'/modules/$m/root.sh" || exit 1; done'
+
+  # User parts.
+  for m in $MODULES; do
+    [ -f "$HC_ROOT/modules/$m/user.sh" ] && sh "$HC_ROOT/modules/$m/user.sh"
+  done
+  log "apply finished"
+}
+
+cmd_status() {
+  . "$HC_ROOT/lib/common.sh"
+  up() { curl -fsS -m 5 -o /dev/null "$1" 2>/dev/null && echo up || echo DOWN; }
+  echo "HomeCider $HC_VERSION  ·  modules: $MODULES"
+  echo "Disk: $(df -h /System/Volumes/Data | awk 'NR==2{print $5" used, "$4" free"}')"
+  has_battery && echo "Battery: $(pmset -g batt | grep -Eo '[0-9]+%;[^;]*' | head -1)"
+  echo "Jobs:"
+  for j in alerts update; do printf '  %-12s %s\n' "$j" "$(launchctl print "gui/$HC_UID/$HC_LABEL.$j" >/dev/null 2>&1 && echo loaded || echo MISSING)"; done
+  has_battery && printf '  %-12s %s\n' low-battery "$(launchctl print "system/$HC_LABEL.low-battery" >/dev/null 2>&1 && echo loaded || echo MISSING)"
+  echo "Services:"
+  has_module media && printf '  %-12s %s  http://localhost:8096\n' jellyfin "$(up http://localhost:8096/health)"
+  has_module photos && printf '  %-12s %s  http://localhost:2283\n' immich "$(up http://localhost:2283/api/server/ping)"
+  if uses_docker; then
+    echo "Containers:"
+    docker ps -a --format '{{.Names}}\t{{.Status}}' 2>/dev/null | sed 's/^/  /' || echo "  docker not responding"
+  fi
+  [ -d "$HC_STATE/alerts" ] && active="$(ls "$HC_STATE/alerts" 2>/dev/null | grep -v '^immich-' || true)"
+  echo "Active alerts: ${active:-none}"
+}
+
+case "${1:-help}" in
+  init) cmd_init ;;
+  apply) cmd_apply ;;
+  status) cmd_status ;;
+  doctor) cmd_doctor ;;
+  version|--version) echo "homecider $HC_VERSION" ;;
+  help|-h|--help) usage ;;
+  *) usage; exit 1 ;;
+esac

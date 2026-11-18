@@ -1,0 +1,109 @@
+# downloads module (opt-in): Seerr (requests), Radarr (films), Sonarr (shows), Prowlarr (indexers),
+# qBittorrent (downloads), Maintainerr (removes watched media), Recyclarr (quality profiles, run on demand).
+# All values come from .env, written by user.sh from homecider.env and secrets.env.
+# qBittorrent sends torrent traffic only over QBIT_INTERFACE: tun0 (VPN, default; nothing is sent until a VPN
+# interface exists) or eth0 (home connection; needs DOWNLOADS_ALLOW_HOME_IP=true).
+# Radarr, Sonarr, Prowlarr and Seerr require a login. qBittorrent and Maintainerr listen on 127.0.0.1 only.
+name: homecider-downloads
+
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/radarr:/config
+      - ${MEDIA_ROOT}:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/sonarr:/config
+      - ${MEDIA_ROOT}:/data
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    container_name: seerr
+    init: true
+    user: ${PUID}:${PGID}
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/seerr:/app/config
+    ports:
+      - 5055:5055
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+  maintainerr:
+    image: ghcr.io/maintainerr/maintainerr:latest
+    container_name: maintainerr
+    user: ${PUID}:${PGID}
+    environment:
+      - TZ=${TZ}
+      - TELEMETRY=off
+    volumes:
+      - ${CONFIG_ROOT}/maintainerr:/opt/data
+    ports:
+      - 127.0.0.1:6246:6246
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+    volumes:
+      - ${CONFIG_ROOT}/qbittorrent:/config
+      - ${MEDIA_ROOT}:/data
+    ports:
+      - 127.0.0.1:8080:8080
+    restart: unless-stopped
+
+  # Not a running service: applies recyclarr.yml to Radarr and Sonarr. Run: docker compose run --rm recyclarr sync
+  recyclarr:
+    image: recyclarr/recyclarr:8
+    container_name: recyclarr
+    profiles: [tools]
+    entrypoint: [recyclarr]
+    user: ${PUID}:${PGID}
+    environment:
+      - TZ=${TZ}
+      - RADARR_API_KEY=${RADARR_API_KEY}
+      - SONARR_API_KEY=${SONARR_API_KEY}
+    volumes:
+      - ${CONFIG_ROOT}/recyclarr:/config
+      - ./recyclarr.yml:/config/recyclarr.yml:ro
