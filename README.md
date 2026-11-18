@@ -9,7 +9,7 @@ not supported: Apple no longer releases new macOS versions for them, and HomeCid
 Use a Mac that stays at home and stays on. A dedicated one is best, because HomeCider changes settings for the
 whole Mac: it disables sleep (also with the lid closed), turns off File Sharing and Screen Sharing, makes your
 home folder private to other accounts, upgrades its own Homebrew apps every week, and on laptops shuts the Mac down
-at 15% battery.
+at 15% battery (`BATTERY_SHUTDOWN_PCT`). Every setting and its default is in `homecider.env.example`.
 
 > **After a restart or power cut, everything stays down until someone unlocks the Mac in person.** With
 > FileVault on (recommended), macOS waits at the unlock screen before any service or SSH starts. Laptops ride
@@ -25,8 +25,8 @@ at 15% battery.
 | `core` | Key-only SSH, no sleep (lid closed too), firewall and stealth mode, sharing services off, macOS updates download-only, push alerts (disk, battery, services, updates), weekly app and container updates, clean shutdown on low battery (laptops) | always on |
 | `media` | [Jellyfin](https://jellyfin.org) running natively with Apple VideoToolbox hardware transcoding, as a hidden user that can read only your media folder | on |
 | `photos` | [Immich](https://immich.app) photo and video backup from your phone, pinned version | on |
-| `backup` | Nightly encrypted [restic](https://restic.net) backup to Backblaze B2 or any S3 bucket, 30-day deletion protection, restore test, alert when stale | off (needs a bucket) |
-| `downloads` | Request and library management (Seerr, Radarr, Sonarr, Prowlarr, qBittorrent, Maintainerr) with 1080p quality profiles. VPN-only unless you opt in to your home connection | **off** |
+| `backup` | Nightly encrypted [restic](https://restic.net) backup to Backblaze B2 or any S3 bucket, 30-day deletion protection, restore test, alert when stale. See [docs/backup.md](docs/backup.md) | off (needs a bucket) |
+| `downloads` | Request and library management (Seerr, Radarr, Sonarr, Prowlarr, qBittorrent, Maintainerr) with 1080p quality profiles. VPN-only unless you opt in to your home connection. See [docs/downloads.md](docs/downloads.md) | **off** |
 
 Nothing is exposed to the internet: no port forwards, no UPnP, and admin-only tools listen on localhost.
 
@@ -88,7 +88,8 @@ flowchart TB
   prowlarr -->|indexers| arr
   prowlarr <--> indexers
   arr --> qbit --> gluetun <-->|VPN tunnel| peers
-  qbit -->|download, hardlink import| media
+  qbit -->|download| media
+  arr -->|hardlink import| media
   screens -->|stream| jellyfin -->|read only| media
   arr -.->|refresh| jellyfin
   maintainerr -.->|watch history| jellyfin
@@ -172,18 +173,19 @@ bin/homecider status    # services, jobs, containers, disk, battery, active aler
 bin/homecider apply     # after editing homecider.env or pulling a new version
 ```
 
-- **Alerts** arrive on your phone when the disk is above 85%, the Mac runs on battery, a service is down for
-  10 minutes, or a macOS update is waiting.
+- **Alerts** arrive on your phone when the disk is above 85% (`DISK_ALERT_PCT`), the Mac runs on battery,
+  Jellyfin or Immich is down for 10 minutes, a container stops, the last backup is more than 36 hours old, or a
+  macOS update is waiting.
   Alerts go through the public [ntfy.sh](https://ntfy.sh) server: the message text (e.g. "Disk 91% full",
   "Jellyfin is down") passes through it, and anyone who knows your topic name can read your alerts. The topic is
   random (`hc-` plus 24 hex characters); keep it private, or set `NTFY_SERVER` to your own ntfy server.
-- **Vaults** for archives you rarely open (old phone backups, documents): `homecider vault create NAME` makes an
+- **Vaults** for archives you rarely open (old phone backups, documents): `bin/homecider vault create NAME` makes an
   AES-256 encrypted disk image in `~/Vault`; while closed it is unreadable, even to programs running as you.
   The `backup` module backs vaults up as they are, still encrypted.
 - **Updates**: HomeCider's Homebrew apps (OrbStack, Jellyfin, restic) and container images update every Sunday at
-  04:00; set `UPDATE_ALL_HOMEBREW=true` to upgrade every Homebrew app, and afterwards dangling Docker images
-  (untagged, unused) are removed unless `UPDATE_PRUNE_IMAGES=false`. Immich is pinned; you get
-  a message when a new release exists. macOS updates download automatically and wait for you, because each one
+  04:00 (`UPDATE_WEEKDAY`, `UPDATE_HOUR`). Set `UPDATE_ALL_HOMEBREW=true` to upgrade every Homebrew app.
+  After the update, dangling Docker images (untagged, unused) are removed; `UPDATE_PRUNE_IMAGES=false` keeps them.
+  Immich is pinned; you get a message when a new release exists. macOS updates download automatically and wait for you, because each one
   restarts into the FileVault unlock screen.
 
 ## What `apply` changes on your Mac
@@ -199,6 +201,9 @@ So you can review it before running:
 - `media`: hidden user `_jellyfin` (UID 450), LaunchDaemon `io.homecider.jellyfin`, data in
   `/Library/Application Support/jellyfin`, a sudoers rule that lets you restart Jellyfin without a password.
   Your home folder becomes `750` and other home folders readable by other users become private.
+- With `photos` or `downloads` on: a `PATH` line for OrbStack's `docker` in `~/.zshenv`, the compose and buildx
+  plugins linked into `~/.docker/cli-plugins/`, OrbStack set to start at login with a memory cap
+  (`DOCKER_MEMORY_MIB`).
 - Your settings in `~/.config/homecider/homecider.env`. Secrets (ntfy topic, database and app passwords) in
   `~/Library/Application Support/homecider/secrets.env` (mode 600), generated Compose settings in
   `~/Library/Application Support/homecider/compose/`. Nothing is written into the code folder.
