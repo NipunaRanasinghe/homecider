@@ -29,7 +29,7 @@ Reports from Macs other than the MacBook Air M1 it was built on are especially u
 ## Changing code
 
 - **Shell**: POSIX `sh` (no bash-only syntax), `set -eu` in scripts, quote variables. Run
-  `shellcheck -s sh` on changed files.
+  `shellcheck -s sh` on changed files, and `bats tests` (`brew install bats-core`) when you change `lib/common.sh`.
 - **Idempotent**: every step must be safe to run again. Check before you create, compare before you restart.
 - **No personal values**: everything specific to a server comes from `homecider.env` or `secrets.env`.
   Add new settings to `homecider.env.example` with their default and a one-line explanation.

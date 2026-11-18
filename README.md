@@ -373,6 +373,7 @@ lib/common.sh          config loading, defaults, helpers
 modules/<name>/        root.sh (runs with sudo) and/or user.sh, plus the module's files
 homecider.env.example  every setting, with defaults
 docs/                  design decisions and module guides
+tests/                 BATS tests for lib/common.sh (run: bats tests)
 ```
 
 ## What `apply` changes on your Mac
