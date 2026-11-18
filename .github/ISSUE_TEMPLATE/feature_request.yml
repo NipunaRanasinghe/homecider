@@ -1,0 +1,15 @@
+name: Feature or module idea
+description: Suggest a change or a new module
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What should HomeCider do, and why
+    validations:
+      required: true
+  - type: textarea
+    id: changes
+    attributes:
+      label: For a new module or system change
+      description: What it installs, what it changes on the Mac, and how it stays off the internet.

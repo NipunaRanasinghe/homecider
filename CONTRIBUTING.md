@@ -15,6 +15,9 @@ Open an issue with:
 **Never post** `secrets.env`, `.env` files, API keys, passwords, your ntfy topic or VPN keys.
 Security issues: do not open a public issue; use GitHub's private vulnerability reporting on this repository.
 
+Issues asking which indexers, trackers or download sources to use are closed without an answer. HomeCider ships
+none and does not recommend any.
+
 ## Testing on your Mac
 
 Reports from Macs other than the MacBook Air M1 it was built on are especially useful:

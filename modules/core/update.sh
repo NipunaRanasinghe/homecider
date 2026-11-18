@@ -8,8 +8,19 @@ echo "== $(date)"
 
 images() { docker ps -q | xargs docker inspect -f '{{.Name}} {{.Image}}' 2>/dev/null | sort; }
 
+# Only HomeCider's own apps by default; UPDATE_ALL_HOMEBREW=true upgrades every Homebrew app on the Mac.
+casks=""; uses_docker && casks="$casks orbstack"; has_module media && casks="$casks jellyfin"
+formulae=""; has_module backup && formulae="restic"
 casks_before="$(brew list --cask --versions)"
-{ brew update && brew upgrade --greedy; } || failed="$failed brew"
+if [ "$UPDATE_ALL_HOMEBREW" = true ]; then
+  { brew update && brew upgrade --greedy; } || failed="$failed brew"
+else
+  brew update || failed="$failed brew"
+  # shellcheck disable=SC2086  # word splitting of the app lists is intended
+  { [ -z "$casks" ] || brew upgrade --cask --greedy $casks; } || failed="$failed brew"
+  # shellcheck disable=SC2086
+  { [ -z "$formulae" ] || brew upgrade $formulae; } || failed="$failed brew"
+fi
 casks_after="$(brew list --cask --versions)"
 casks_changed="$(echo "$casks_after" | grep -vxF "$casks_before")"
 if echo "$casks_changed" | grep -q '^jellyfin '; then
@@ -24,7 +35,8 @@ if uses_docker; then
     has_module "$m" || continue
     { dc "$m" pull -q && dc "$m" up -d; } || failed="$failed $m"
   done
-  docker image prune -f >/dev/null
+  # Removes dangling images only (untagged and unused, e.g. the previous version after a pull); UPDATE_PRUNE_IMAGES=false keeps them.
+  [ "$UPDATE_PRUNE_IMAGES" = false ] || docker image prune -f >/dev/null
   images_changed="$(images | grep -vxF "$images_before" | cut -d' ' -f1 | tr -d / | tr '\n' ' ')"
 fi
 

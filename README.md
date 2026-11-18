@@ -8,8 +8,12 @@ not supported: Apple no longer releases new macOS versions for them, and HomeCid
 
 Use a Mac that stays at home and stays on. A dedicated one is best, because HomeCider changes settings for the
 whole Mac: it disables sleep (also with the lid closed), turns off File Sharing and Screen Sharing, makes your
-home folder private to other accounts, upgrades all Homebrew apps every week, and on laptops shuts the Mac down
+home folder private to other accounts, upgrades its own Homebrew apps every week, and on laptops shuts the Mac down
 at 15% battery.
+
+> **After a restart or power cut, everything stays down until someone unlocks the Mac in person.** With
+> FileVault on (recommended), macOS waits at the unlock screen before any service or SSH starts. Laptops ride
+> out short power cuts on battery; desktops restart only when power returns and still need the unlock.
 
 > Status: early development (0.1.0-dev). Tested on a MacBook Air M1 with the current macOS.
 > Other Apple Silicon Macs should work; reports are welcome.
@@ -170,10 +174,15 @@ bin/homecider apply     # after editing homecider.env or pulling a new version
 
 - **Alerts** arrive on your phone when the disk is above 85%, the Mac runs on battery, a service is down for
   10 minutes, or a macOS update is waiting.
+  Alerts go through the public [ntfy.sh](https://ntfy.sh) server: the message text (e.g. "Disk 91% full",
+  "Jellyfin is down") passes through it, and anyone who knows your topic name can read your alerts. The topic is
+  random (`hc-` plus 24 hex characters); keep it private, or set `NTFY_SERVER` to your own ntfy server.
 - **Vaults** for archives you rarely open (old phone backups, documents): `homecider vault create NAME` makes an
   AES-256 encrypted disk image in `~/Vault`; while closed it is unreadable, even to programs running as you.
   The `backup` module backs vaults up as they are, still encrypted.
-- **Updates**: Homebrew apps and container images update every Sunday at 04:00. Immich is pinned; you get
+- **Updates**: HomeCider's Homebrew apps (OrbStack, Jellyfin, restic) and container images update every Sunday at
+  04:00; set `UPDATE_ALL_HOMEBREW=true` to upgrade every Homebrew app, and afterwards dangling Docker images
+  (untagged, unused) are removed unless `UPDATE_PRUNE_IMAGES=false`. Immich is pinned; you get
   a message when a new release exists. macOS updates download automatically and wait for you, because each one
   restarts into the FileVault unlock screen.
 

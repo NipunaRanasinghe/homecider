@@ -42,6 +42,8 @@ HC_ROOT_STABLE="$(echo "$HC_ROOT" | sed 's#/Cellar/homecider/[^/]*/#/opt/homecid
 : "${BATTERY_SHUTDOWN_PCT:=15}"
 : "${UPDATE_WEEKDAY:=0}"
 : "${UPDATE_HOUR:=4}"
+: "${UPDATE_ALL_HOMEBREW:=false}"
+: "${UPDATE_PRUNE_IMAGES:=true}"
 : "${JELLYFIN_UID:=450}"
 
 export PATH="/Applications/OrbStack.app/Contents/MacOS/xbin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
@@ -82,7 +84,7 @@ set_secret() {   # name value: add or replace
 # ntfy push message: title, body, tag. Does nothing without a topic.
 notify() {
   [ -n "${NTFY_TOPIC:-}" ] || return 0
-  curl -fsS -m 15 -H "Title: $1" -H "Tags: $3" -d "$2" "https://ntfy.sh/$NTFY_TOPIC" >/dev/null
+  curl -fsS -m 15 -H "Title: $1" -H "Tags: $3" -d "$2" "${NTFY_SERVER:-https://ntfy.sh}/$NTFY_TOPIC" >/dev/null
 }
 
 # Load a launchd job from a plist file: domain (system | gui), plist path.
