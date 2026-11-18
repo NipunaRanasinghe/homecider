@@ -1,4 +1,6 @@
+__pycache__/
+.DS_Store
 homecider.env
 modules/*/.env
-.DS_Store
-__pycache__/
+modules/*/vpn.env
+vpn.env

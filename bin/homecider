@@ -4,11 +4,12 @@
 #   homecider apply    set up every enabled module (asks for sudo once); safe to re-run
 #   homecider status   show services, jobs, disk and battery
 #   homecider doctor   check prerequisites and configuration
+#   homecider leaktest check that downloads go through the VPN (downloads module)
 set -eu
 HC_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 HC_VERSION=0.1.0-dev
 
-usage() { sed -n '2,6p' "$0" | sed 's/^# //'; }
+usage() { sed -n '2,7p' "$0" | sed 's/^# //'; }
 
 cmd_init() {
   if [ -f "$HC_ROOT/homecider.env" ]; then echo "homecider.env already exists; edit it, then run: homecider apply"; return; fi
@@ -91,6 +92,7 @@ case "${1:-help}" in
   apply) cmd_apply ;;
   status) cmd_status ;;
   doctor) cmd_doctor ;;
+  leaktest) sh "$HC_ROOT/modules/downloads/leak-test.sh" ;;
   version|--version) echo "homecider $HC_VERSION" ;;
   help|-h|--help) usage ;;
   *) usage; exit 1 ;;

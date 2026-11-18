@@ -26,6 +26,9 @@ print(json.dumps({
   "max_ratio_enabled": True, "max_ratio": 1,                      # stop seeding at ratio 1
   "max_seeding_time_enabled": True, "max_seeding_time": 1440,     # or after 1 day
   "max_ratio_act": 0,                                             # 0 = stop; Radarr/Sonarr then remove it
+  # VPN mode: the Gluetun port-forwarding hook calls this API from 127.0.0.1 inside the shared network.
+  # The web UI is published on 127.0.0.1 of the Mac only, and those requests arrive from the Docker gateway.
+  "bypass_local_auth": os.environ["QBIT_INTERFACE"] == "tun0",
 }))')"
 curl -sf -o /dev/null -b "$J" --referer "$U" --data-urlencode "json=$prefs" "$U/api/v2/app/setPreferences"
 echo "qBittorrent settings applied"

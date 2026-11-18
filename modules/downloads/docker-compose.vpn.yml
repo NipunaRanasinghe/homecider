@@ -1,0 +1,44 @@
+# Added on top of docker-compose.yml when a VPN is configured (user.sh sets COMPOSE_FILE in .env).
+# qBittorrent and Prowlarr share Gluetun's network: their only route out is the VPN tunnel (tun0), and Gluetun's
+# firewall drops everything else, so nothing leaks if the VPN goes down. Other containers reach them as
+# gluetun:8080 (qBittorrent) and gluetun:9696 (Prowlarr).
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    env_file:
+      - vpn.env
+    environment:
+      - TZ=${TZ}
+      - FIREWALL_INPUT_PORTS=8080,9696
+      - FIREWALL_OUTBOUND_SUBNETS=172.30.0.0/24
+      # Port forwarding (providers that support it): tell qBittorrent the forwarded port.
+      - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'wget -qO- --post-data "json={\"listen_port\":{{PORTS}}}" http://127.0.0.1:8080/api/v2/app/setPreferences'
+    ports:
+      - 127.0.0.1:8080:8080
+      - 9696:9696
+    restart: unless-stopped
+
+  qbittorrent:
+    network_mode: service:gluetun
+    ports: !reset []
+    depends_on:
+      gluetun:
+        condition: service_healthy
+
+  prowlarr:
+    network_mode: service:gluetun
+    ports: !reset []
+    depends_on:
+      gluetun:
+        condition: service_healthy
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24

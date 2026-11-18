@@ -9,6 +9,27 @@ Opt-in: add `downloads` to `MODULES` in `homecider.env`.
 | `vpn` (default) | qBittorrent is bound to the `tun0` interface. Until a VPN container provides `tun0`, it sends no peer or tracker traffic. Everything else (requests, search, quality profiles) works. |
 | `home` | Torrent traffic uses your home connection. Every peer, and any copyright monitor in the swarm, sees your home IP address. Requires `DOWNLOADS_ALLOW_HOME_IP=true`. Do not add a router port forward. |
 
+### Setting up the VPN
+
+HomeCider uses [Gluetun](https://github.com/qdm12/gluetun), which supports most VPN providers. Pick one with
+**port forwarding** (for example ProtonVPN Plus or AirVPN), otherwise downloads are slow and seeding barely works.
+Put the Gluetun settings in `secrets.env` (`~/Library/Application Support/homecider/secrets.env`, mode 600),
+for example for ProtonVPN with WireGuard:
+
+```sh
+VPN_SERVICE_PROVIDER=protonvpn
+VPN_TYPE=wireguard
+WIREGUARD_PRIVATE_KEY=...        # from the provider's WireGuard config file
+SERVER_COUNTRIES=Singapore
+VPN_PORT_FORWARDING=on
+```
+
+Supported variables: `VPN_SERVICE_PROVIDER VPN_TYPE WIREGUARD_PRIVATE_KEY WIREGUARD_PRESHARED_KEY
+WIREGUARD_ADDRESSES OPENVPN_USER OPENVPN_PASSWORD SERVER_COUNTRIES SERVER_CITIES SERVER_HOSTNAMES
+VPN_PORT_FORWARDING VPN_PORT_FORWARDING_PROVIDER` (see Gluetun's wiki for your provider). Then run
+`homecider apply`, followed by **`homecider leaktest`** before the first download. With a VPN, Radarr, Sonarr
+and Prowlarr reach qBittorrent at host `gluetun`, port `8080`, and Prowlarr at `http://gluetun:9696`.
+
 Downloading copyrighted material may be illegal where you live. HomeCider ships no indexers; you choose them.
 
 ## What apply sets up
@@ -30,7 +51,7 @@ Downloading copyrighted material may be illegal where you live. HomeCider ships 
 1. Radarr, Sonarr, Prowlarr: open each and set the login (Forms, Required) immediately.
 2. Prowlarr: add indexers; Settings → Apps → add Radarr (`http://radarr:7878`) and Sonarr (`http://sonarr:8989`)
    with Prowlarr server `http://prowlarr:9696`.
-3. Radarr and Sonarr: Settings → Download Clients → qBittorrent, host `qbittorrent`, port `8080`, user `admin`,
+3. Radarr and Sonarr: Settings → Download Clients → qBittorrent, host `qbittorrent` (`gluetun` with a VPN), port `8080`, user `admin`,
    password `QBIT_PASSWORD` from `secrets.env`. Root folders `/data/Movies` and `/data/Shows`.
 4. Radarr and Sonarr: Settings → Connect → Emby/Jellyfin, host `host.docker.internal`, port `8096`, a Jellyfin
    API key, Update Library on, Map Paths From `/data/` To your `MEDIA_DIR/`.
