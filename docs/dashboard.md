@@ -53,6 +53,8 @@ Run `homecider apply` after setting a key.
 - **Allowed host names.** Homepage answers only requests addressed to the Mac's `.local` name, its local IP
   address and, with Tailscale, its Tailscale name and IP (`HOMEPAGE_ALLOWED_HOSTS`). If the local IP address
   changes, run `homecider apply` again.
+- **Homepage's log can contain API keys.** Some widgets send the key in the request URL, and Homepage logs
+  the URL of failed requests (`docker logs homepage`). Do not paste that log into issues or chats.
 - **Docker access is read-only.** Homepage reads container status through a proxy container that refuses every
   write request (`POST=0`); it cannot start, stop or create containers.
 

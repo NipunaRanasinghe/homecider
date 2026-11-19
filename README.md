@@ -66,6 +66,11 @@ HomeCider is designed for use on your home network. It does not configure public
   <sub>Seerr's Discover page, where people at home request films and shows (<code>downloads</code> module, off by default).</sub>
 </p>
 
+<p align="center">
+  <img src="docs/images/dashboard.png" alt="HomeCider dashboard at phone width: Mac status panel, then Jellyfin, Immich and the download apps with live counts" width="300"/><br/>
+  <sub>The dashboard at phone width on a MacBook Air M1 (<code>dashboard</code> module, off by default). See <a href="docs/dashboard.md">docs/dashboard.md</a>.</sub>
+</p>
+
 ### Why macOS and not Linux
 
 - **Hardware transcoding.** Jellyfin uses VideoToolbox on Apple Silicon; Linux on these Macs has no hardware
