@@ -169,7 +169,8 @@ Alerts arrive on your phone when:
 - the disk is above 85% (`DISK_ALERT_PCT`)
 - the Mac runs on battery
 - Jellyfin or Immich is down for 10 minutes
-- a container stops
+- a container stops or reports unhealthy
+- VPN port forwarding is on but Gluetun has had no forwarded port for 10 minutes (`downloads` module)
 - the last backup is more than 36 hours old
 - a macOS update is waiting
 
