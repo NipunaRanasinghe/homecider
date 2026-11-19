@@ -13,7 +13,14 @@ casks=""; uses_docker && casks="$casks orbstack"; has_module media && casks="$ca
 formulae=""; has_module backup && formulae="restic"
 casks_before="$(brew list --cask --versions)"
 if [ "$UPDATE_ALL_HOMEBREW" = true ]; then
-  { brew update && brew upgrade --greedy; } || failed="$failed brew"
+  # Every outdated app except HomeCider itself: a new HomeCider version takes effect only after `homecider apply`.
+  if brew update && outdated="$(brew outdated --greedy --quiet)"; then
+    outdated="$(printf '%s\n' "$outdated" | grep -Ev '(^|/)homecider$' || true)"
+    # shellcheck disable=SC2086  # word splitting of the app list is intended
+    { [ -z "$outdated" ] || brew upgrade --greedy $outdated; } || failed="$failed brew"
+  else
+    failed="$failed brew"
+  fi
 else
   brew update || failed="$failed brew"
   # shellcheck disable=SC2086  # word splitting of the app lists is intended
