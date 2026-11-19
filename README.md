@@ -31,8 +31,8 @@ It builds on established open-source projects and handles the routine work of ke
 ## Quick start
 
 ```sh
-git clone https://github.com/NipunaRanasinghe/homecider.git ~/homecider && cd ~/homecider
-bin/homecider init && bin/homecider doctor && bin/homecider apply
+brew install nipunaranasinghe/homecider/homecider
+homecider init && homecider doctor && homecider apply
 ```
 
 > [!IMPORTANT]
@@ -104,14 +104,29 @@ The full list of system changes is in [What `apply` changes on your Mac](#what-a
 Run these commands on the Mac you want to use as your server:
 
 ```sh
-git clone https://github.com/NipunaRanasinghe/homecider.git ~/homecider
-cd ~/homecider
-bin/homecider init      # writes ~/.config/homecider/homecider.env; review MODULES and paths
-bin/homecider doctor    # checks prerequisites
-bin/homecider apply     # sets everything up; asks for your password once for system changes
+brew install nipunaranasinghe/homecider/homecider
+homecider init      # writes ~/.config/homecider/homecider.env; review MODULES and paths
+homecider doctor    # checks prerequisites
+homecider apply     # sets everything up; asks for your password once for system changes
 ```
 
-`apply` is designed to be idempotent. You can run it again after changing `homecider.env`, pulling updates with `git pull`, or to reapply a setting.
+`apply` is designed to be idempotent. You can run it again after changing `homecider.env`, after upgrading
+HomeCider, or to reapply a setting.
+
+To upgrade HomeCider: `brew upgrade homecider && homecider apply`. The new version takes effect only after
+`apply`, so the weekly update job does not upgrade HomeCider itself.
+
+<details>
+<summary>Install from a git clone instead</summary>
+
+```sh
+git clone https://github.com/NipunaRanasinghe/homecider.git ~/homecider
+cd ~/homecider
+bin/homecider init && bin/homecider doctor && bin/homecider apply
+```
+
+Use `bin/homecider` wherever this README says `homecider`. To upgrade: `git pull && bin/homecider apply`.
+</details>
 
 ### First-time checklist
 
@@ -130,19 +145,19 @@ bin/homecider apply     # sets everything up; asks for your password once for sy
 
 | Command | What it does |
 |---|---|
-| `bin/homecider init` | Creates `homecider.env` from the example |
-| `bin/homecider doctor` | Checks prerequisites and configuration |
-| `bin/homecider apply` | Sets up every enabled module (asks for sudo once); safe to re-run |
-| `bin/homecider status` | Shows services, jobs, containers, disk, battery and active alerts |
-| `bin/homecider backup now \| snapshots \| restore-test` | Runs a backup, lists snapshots, or tests a restore (`backup` module) |
-| `bin/homecider vault create \| open \| close \| list` | Manages encrypted disk images for archives |
-| `bin/homecider leaktest` | Checks that downloads go through the VPN (`downloads` module) |
-| `bin/homecider secret set NAME` | Stores a secret in `secrets.env` without echoing it |
-| `bin/homecider uninstall` | Stops services and removes system changes; data is kept |
+| `homecider init` | Creates `homecider.env` from the example |
+| `homecider doctor` | Checks prerequisites and configuration |
+| `homecider apply` | Sets up every enabled module (asks for sudo once); safe to re-run |
+| `homecider status` | Shows services, jobs, containers, disk, battery and active alerts |
+| `homecider backup now \| snapshots \| restore-test` | Runs a backup, lists snapshots, or tests a restore (`backup` module) |
+| `homecider vault create \| open \| close \| list` | Manages encrypted disk images for archives |
+| `homecider leaktest` | Checks that downloads go through the VPN (`downloads` module) |
+| `homecider secret set NAME` | Stores a secret in `secrets.env` without echoing it |
+| `homecider uninstall` | Stops services and removes system changes; data is kept |
 
 <p align="center">
-  <img src="docs/images/status.svg" alt="Output of bin/homecider status" width="660"/><br/>
-  <sub>Output of <code>bin/homecider status</code> on a MacBook Air M1 with <code>core</code>, <code>media</code>, <code>photos</code> and <code>downloads</code> enabled.</sub>
+  <img src="docs/images/status.svg" alt="Output of homecider status" width="660"/><br/>
+  <sub>Output of <code>homecider status</code> on a MacBook Air M1 with <code>core</code>, <code>media</code>, <code>photos</code> and <code>downloads</code> enabled.</sub>
 </p>
 
 ## Everyday use
@@ -164,7 +179,7 @@ random (`hc-` plus 24 hex characters); keep it private, or set `NTFY_SERVER` to 
 
 ### Vaults
 
-For archives you rarely open (old phone backups, documents): `bin/homecider vault create NAME` makes an
+For archives you rarely open (old phone backups, documents): `homecider vault create NAME` makes an
 AES-256 encrypted disk image in `~/Vault`; while closed it is unreadable, even to programs running as you.
 The `backup` module backs vaults up as they are, still encrypted.
 
@@ -394,7 +409,8 @@ So you can review it before running:
 ## Uninstall
 
 ```sh
-bin/homecider uninstall
+homecider uninstall
+brew uninstall homecider    # only after homecider uninstall: the launchd jobs run scripts from this install
 ```
 
 Stops the containers, removes the launchd jobs, the SSH config file, the sudoers rule and the `_jellyfin` user,
