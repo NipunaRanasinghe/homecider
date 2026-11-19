@@ -23,6 +23,7 @@
 - [x] Gluetun VPN container for `downloads` (qBittorrent and Prowlarr in its network, port forwarding, `homecider leaktest`). Compose config validated; not yet run against a real VPN provider
 - [x] `backup` module: restic to Backblaze B2 / S3, nightly, 30-day deletion protection (no-delete app key + lifecycle), `homecider backup now | snapshots | restore-test`. Tested with a local repository; not yet against B2
 - [x] `vault` helper: encrypted disk image for archives (`homecider vault create | open | close | list`); create requires reopening with the saved password. `list` and input checks tested; create/open need a person to type the password
+- [x] `dashboard` module: Homepage on port 3000 with a Mac status panel and widgets for the enabled services, Docker access through a read-only proxy (`docs/dashboard.md`). Tested on one Mac with a full `apply`; `uninstall` not yet tested
 - [ ] Automate the remaining app wiring where an API exists (Seerr, Prowlarr, Jellyfin library refresh)
 - [ ] CI: shellcheck, `homecider doctor` dry run
 - [ ] Fresh-install test on a second Mac
