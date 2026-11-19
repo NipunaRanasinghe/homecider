@@ -80,7 +80,7 @@ special_values() {
   run has_module med;     [ "$status" -eq 1 ]
 }
 
-@test "uses_docker: true only with photos or downloads" {
+@test "uses_docker: false without photos, downloads or dashboard" {
   echo 'MODULES="core media"' > "$HC_CONFIG"
   load_common
   run uses_docker; [ "$status" -eq 1 ]
@@ -128,4 +128,10 @@ special_values() {
   HC_ROOT=/opt/homebrew/Cellar/homecider/0.1.0/libexec
   load_common
   [ "$HC_ROOT_STABLE" = /opt/homebrew/opt/homecider/libexec ]
+}
+
+@test "uses_docker: true with dashboard" {
+  echo 'MODULES="core dashboard"' > "$HC_CONFIG"
+  load_common
+  uses_docker
 }

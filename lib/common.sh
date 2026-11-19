@@ -16,7 +16,7 @@ HC_HOME="$(dscl . -read "/Users/$HC_USER" NFSHomeDirectory 2>/dev/null | awk '{p
 [ -n "$HC_HOME" ] || { echo "homecider: user $HC_USER not found" >&2; exit 1; }
 HC_UID="$(id -u "$HC_USER")"
 HC_GID="$(id -g "$HC_USER")"
-HC_STATE="$HC_HOME/Library/Application Support/homecider"   # secrets and alert state
+HC_STATE="${HC_STATE:-$HC_HOME/Library/Application Support/homecider}"   # secrets and alert state (tests set HC_STATE)
 HC_SECRETS="$HC_STATE/secrets.env"
 HC_LOGS="$HC_HOME/Library/Logs/homecider"
 HC_LABEL=io.homecider                                          # launchd label prefix
@@ -55,7 +55,7 @@ die()  { printf 'homecider: %s\n' "$*" >&2; exit 1; }
 
 has_module()  { case " $MODULES " in *" $1 "*) return 0 ;; esac; return 1; }
 has_battery() { pmset -g batt | grep -q InternalBattery; }
-uses_docker() { has_module photos || has_module downloads; }
+uses_docker() { has_module photos || has_module downloads || has_module dashboard; }
 
 # Run a command as the server owner (used by root scripts).
 as_user() { if [ "$(id -u)" = 0 ]; then sudo -u "$HC_USER" -H "$@"; else "$@"; fi; }

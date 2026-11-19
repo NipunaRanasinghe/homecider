@@ -36,7 +36,7 @@ read -r answer
 [ "$answer" = yes ] || die "cancelled"
 
 # Containers: stop and remove; volumes, images and data folders stay.
-for m in photos downloads; do
+for m in photos downloads dashboard; do
   [ -f "$HC_COMPOSE/$m/.env" ] || continue
   dc "$m" down || warn "could not stop the $m containers (is OrbStack running?); remove them with: docker compose down"
 done

@@ -71,10 +71,12 @@ cmd_apply() {
   log "root steps:$roots (sudo)"
   sudo sh -c 'for m in '"$roots"'; do sh "'"$HC_ROOT"'/modules/$m/root.sh" || exit 1; done'
 
-  # User parts.
+  # User parts. dashboard runs last: it reads the API keys the other modules store.
   for m in $MODULES; do
+    [ "$m" = dashboard ] && continue
     [ -f "$HC_ROOT/modules/$m/user.sh" ] && sh "$HC_ROOT/modules/$m/user.sh"
   done
+  if has_module dashboard; then sh "$HC_ROOT/modules/dashboard/user.sh"; fi
   log "apply finished"
 }
 
@@ -91,6 +93,7 @@ cmd_status() {
   echo "Services:"
   has_module media && printf '  %-12s %s  http://localhost:8096\n' jellyfin "$(up http://localhost:8096/health)"
   has_module photos && printf '  %-12s %s  http://localhost:2283\n' immich "$(up http://localhost:2283/api/server/ping)"
+  has_module dashboard && printf '  %-12s %s  http://localhost:3000\n' dashboard "$(up http://localhost:3000)"
   if uses_docker; then
     echo "Containers:"
     docker ps -a --format '{{.Names}}\t{{.Status}}' 2>/dev/null | sed 's/^/  /' || echo "  docker not responding"

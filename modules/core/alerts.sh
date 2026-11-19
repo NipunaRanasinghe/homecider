@@ -64,6 +64,9 @@ if has_module backup; then
   check backup-stale "$([ $(( $(date +%s) - last )) -gt 129600 ] && echo 1 || echo 0)" "No backup for 36 hours" "Check $HC_LOGS/backup.log or run homecider backup now."
 fi
 
+# Mac panel on the dashboard (status.json), refreshed with every alerts run.
+if has_module dashboard; then sh "$HC_ROOT/modules/dashboard/status.sh"; fi
+
 # macOS update waiting (checked at most once a day; the check is slow).
 stamp="$state/.update-checked"
 if [ -z "$(find "$stamp" -mtime -1 2>/dev/null)" ]; then

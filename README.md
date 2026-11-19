@@ -52,6 +52,7 @@ homecider init && homecider doctor && homecider apply
 | 🖼️ | `photos` | [Immich](https://immich.app) photo and video backup from your phone, pinned version | on |
 | ☁️ | `backup` | Nightly encrypted [restic](https://restic.net) backup to Backblaze B2 or any S3 bucket, 30-day deletion protection, restore test, alert when stale. See [docs/backup.md](docs/backup.md) | off (needs a bucket) |
 | ⬇️ | `downloads` | Request and library management (Seerr, Radarr, Sonarr, Prowlarr, qBittorrent, Maintainerr) with 1080p quality profiles. VPN-only unless you opt in to your home connection. See [docs/downloads.md](docs/downloads.md) | **off** |
+| 📊 | `dashboard` | [Homepage](https://gethomepage.dev) on port 3000 for checking the server from a phone: services with live numbers, container status, and the Mac's battery, disk, memory, alerts and last backup. No login; see [docs/dashboard.md](docs/dashboard.md) | off |
 
 HomeCider is designed for use on your home network. It does not configure public internet access or port forwarding, does not use UPnP, and keeps administrative tools bound to localhost. To reach Jellyfin and Immich away from home without exposing them, see [docs/remote-access.md](docs/remote-access.md).
 
@@ -91,9 +92,9 @@ The full list of system changes is in [What `apply` changes on your Mac](#what-a
 
 > [!IMPORTANT]
 > **Your router must block incoming IPv6 connections.** HomeCider opens no ports on the router, but with IPv6
-> the Mac gets an address that the internet can reach directly. Jellyfin, Immich and (with `downloads`) Seerr,
-> Radarr, Sonarr and Prowlarr listen on every address, and the macOS firewall allows them. Most home routers drop
-> incoming IPv6 connections; if yours does not, those login pages are public.
+> the Mac gets an address that the internet can reach directly. Jellyfin, Immich, the dashboard and (with
+> `downloads`) Seerr, Radarr, Sonarr and Prowlarr listen on every address, and the macOS firewall allows them. Most home routers drop
+> incoming IPv6 connections; if yours does not, those pages (the dashboard has no login) are public.
 >
 > To check after `apply`: `homecider doctor` prints the Mac's public IPv6 address if it has one. On a phone using
 > mobile data (Wi-Fi off, no VPN), open `http://[<that address>]:8096`. It must time out. If Jellyfin loads, turn
@@ -414,7 +415,7 @@ So you can review it before running:
 | Software Update | Automatic check and download; no automatic install |
 | launchd | LaunchAgents `io.homecider.alerts` and `io.homecider.update`; on laptops, LaunchDaemon `io.homecider.low-battery` |
 | `media` | Hidden user `_jellyfin` (UID 450), LaunchDaemon `io.homecider.jellyfin`, data in `/Library/Application Support/jellyfin`, a sudoers rule that lets you restart Jellyfin without a password. Your home folder becomes `750` and other home folders readable by other users become private |
-| `photos` or `downloads` | A `PATH` line for OrbStack's `docker` in `~/.zshenv`, the compose and buildx plugins linked into `~/.docker/cli-plugins/`, OrbStack set to start at login with a memory cap (`DOCKER_MEMORY_MIB`) |
+| `photos`, `downloads` or `dashboard` | A `PATH` line for OrbStack's `docker` in `~/.zshenv`, the compose and buildx plugins linked into `~/.docker/cli-plugins/`, OrbStack set to start at login with a memory cap (`DOCKER_MEMORY_MIB`) |
 | Files | Your settings in `~/.config/homecider/homecider.env`. Secrets (ntfy topic, database and app passwords) in `~/Library/Application Support/homecider/secrets.env` (mode 600), generated Compose settings in `~/Library/Application Support/homecider/compose/`. Nothing is written into the code folder |
 
 ## Uninstall
@@ -440,6 +441,7 @@ and resets `pmset` to the macOS defaults (sleep on). SSH password login is allow
 | [docs/backup.md](docs/backup.md) | Setting up and restoring the `backup` module |
 | [docs/downloads.md](docs/downloads.md) | Setting up the `downloads` module and its VPN |
 | [docs/remote-access.md](docs/remote-access.md) | Reaching Jellyfin and Immich away from home with Tailscale |
+| [docs/dashboard.md](docs/dashboard.md) | The `dashboard` module: what it shows, API keys, access |
 | [homecider.env.example](homecider.env.example) | Every setting, with defaults |
 
 ## Contributing

@@ -46,7 +46,7 @@ With FileVault on, Tailscale starts only after the Mac is unlocked in person, li
 Jellyfin treats Tailscale addresses (`100.64.0.0/10`) as outside your home network. With remote connections off,
 the Jellyfin page loads through Tailscale but then shows "Select server" or "Connection failure".
 
-1. On the home network, open `http://<mac>.local:8096` and log in as admin.
+1. On the home network, open `http://<mac>.local:8096` (on Android: the Mac's local IP address instead of `<mac>.local`) and log in as admin.
 2. Dashboard → Networking → turn on **Allow remote connections to this server** → Save.
 3. Restart Jellyfin: `sudo launchctl kickstart -k system/io.homecider.jellyfin` (no password needed).
 
@@ -69,7 +69,8 @@ the local address.
 **Immich app**: in the app's settings, open the networking section and turn on automatic URL switching. (Menu
 names differ between app versions; this step has not been checked against the current app.)
 
-- Local network: your home Wi-Fi name and the local URL, for example `http://<mac>.local:2283`.
+- Local network: your home Wi-Fi name and the local URL with the Mac's local IP address, for example
+  `http://192.168.1.6:2283`. Android cannot open `.local` names, so do not use `http://<mac>.local:2283` there.
 - External network: `http://<mac-name>.<tailnet>.ts.net:2283`.
 
 The app reads the Wi-Fi name to choose the URL, so it asks for location permission. Background backup away from
