@@ -41,6 +41,21 @@ address; either works in the URLs below.
 
 With FileVault on, Tailscale starts only after the Mac is unlocked in person, like every other service.
 
+## Allow Tailscale connections in Jellyfin
+
+Jellyfin treats Tailscale addresses (`100.64.0.0/10`) as outside your home network. With remote connections off,
+the Jellyfin page loads through Tailscale but then shows "Select server" or "Connection failure".
+
+1. On the home network, open `http://<mac>.local:8096` and log in as admin.
+2. Dashboard → Networking → turn on **Allow remote connections to this server** → Save.
+3. Restart Jellyfin: `sudo launchctl kickstart -k system/io.homecider.jellyfin` (no password needed).
+
+This opens nothing to the internet: without a router port forward, the only remote devices that can reach
+Jellyfin are the ones signed in to your Tailscale account.
+
+Check from a device on Tailscale: `http://<mac-name>.<tailnet>.ts.net:8096/System/Info/Public` shows a short JSON
+text with `"ServerName"`. An error or blank page means remote connections are still off.
+
 ## Set up your phone and other devices
 
 1. Install the Tailscale app and sign in with the same account.
@@ -51,7 +66,8 @@ With FileVault on, Tailscale starts only after the Mac is unlocked in person, li
 **Jellyfin apps** (phone, TV, laptop): add a server with the Tailscale address. At home the apps can keep using
 the local address.
 
-**Immich app**: Settings → Networking → turn on **Automatic URL switching**.
+**Immich app**: in the app's settings, open the networking section and turn on automatic URL switching. (Menu
+names differ between app versions; this step has not been checked against the current app.)
 
 - Local network: your home Wi-Fi name and the local URL, for example `http://<mac>.local:2283`.
 - External network: `http://<mac-name>.<tailnet>.ts.net:2283`.
@@ -60,6 +76,16 @@ The app reads the Wi-Fi name to choose the URL, so it asks for location permissi
 home works only while Tailscale is connected on the phone.
 
 The traffic is plain HTTP inside the Tailscale tunnel. The tunnel encrypts it between your devices.
+
+## If it does not work
+
+- **The `ts.net` name does not load, but the `100.x.y.z` address does**: on the phone, check that the Tailscale
+  app's **Use Tailscale DNS** is on, and on Android that Private DNS is **Automatic** (a provider hostname
+  bypasses Tailscale's DNS). Then turn Tailscale off and on. The `100.x.y.z` address always works as a fallback.
+- **Jellyfin shows "Select server" or "Connection failure"**: remote connections are off; see
+  [Allow Tailscale connections in Jellyfin](#allow-tailscale-connections-in-jellyfin).
+- **Slow**: `tailscale status` on the Mac shows `direct` or `relay` for each device. The first connection can go
+  through a Tailscale relay server; it normally switches to `direct` within a minute.
 
 ## What stays unreachable
 

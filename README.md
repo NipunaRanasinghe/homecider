@@ -89,6 +89,16 @@ The full list of system changes is in [What `apply` changes on your Mac](#what-a
 > FileVault on (recommended), macOS waits at the unlock screen before any service or SSH starts. Laptops ride
 > out short power cuts on battery; desktops restart only when power returns and still need the unlock.
 
+> [!IMPORTANT]
+> **Your router must block incoming IPv6 connections.** HomeCider opens no ports on the router, but with IPv6
+> the Mac gets an address that the internet can reach directly. Jellyfin, Immich and (with `downloads`) Seerr,
+> Radarr, Sonarr and Prowlarr listen on every address, and the macOS firewall allows them. Most home routers drop
+> incoming IPv6 connections; if yours does not, those login pages are public.
+>
+> To check after `apply`: `homecider doctor` prints the Mac's public IPv6 address if it has one. On a phone using
+> mobile data (Wi-Fi off, no VPN), open `http://[<that address>]:8096`. It must time out. If Jellyfin loads, turn
+> on the router's IPv6 firewall, or turn off IPv6 on the router.
+
 ### Requirements
 
 - Apple Silicon Mac (M1 or later), current or previous macOS release: MacBook (lid closed), Mac mini, iMac or

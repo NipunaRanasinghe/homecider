@@ -44,6 +44,10 @@ cmd_doctor() {
   if uses_docker; then
     [ -x /Applications/OrbStack.app/Contents/MacOS/xbin/docker ] && pass "OrbStack" || note "OrbStack will be installed by apply"
   fi
+  # Services listen on every address; with a public IPv6 address only the router keeps them off the internet.
+  v6="$(ifconfig | awk '$1 == "inet6" && $2 ~ /^[23]/ && !/deprecated/ {print $2; exit}')"
+  [ -n "$v6" ] && note "public IPv6 address $v6: your router must block incoming IPv6. Check from mobile data:" \
+    "http://[$v6]:8096 must time out (README: Before you install)"
   has_battery && note "battery present: low-battery shutdown at ${BATTERY_SHUTDOWN_PCT}%; set the charge limit in System Settings > Battery"
   if has_module downloads; then
     [ "$DOWNLOADS_NETWORK" = vpn ] && note "downloads: VPN-only; nothing downloads until a VPN is configured" ||
