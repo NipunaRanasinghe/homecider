@@ -14,16 +14,3 @@
 | Updates | Homebrew casks and container images weekly via launchd; Immich pinned with a release notice; macOS download-only | No Docker-socket updater; Immich releases can break; macOS updates restart into FileVault |
 | Disk encryption | FileVault recommended; no auto-login | A stolen Mac does not expose data |
 | First admin accounts | Created by the user in each web UI | homecider never chooses or stores the user's passwords |
-
-# Roadmap to 0.1.0
-
-- [x] `core`, `media`, `photos`, `downloads` modules ported from a working server
-- [x] `homecider init | apply | status | doctor`
-- [x] Gluetun VPN container for `downloads` (qBittorrent and Prowlarr in its network, port forwarding, `homecider leaktest`). Compose config validated; not yet run against a real VPN provider
-- [x] `backup` module: restic to Backblaze B2 / S3, nightly, 30-day deletion protection (no-delete app key + lifecycle), `homecider backup now | snapshots | restore-test`. Tested with a local repository; not yet against B2
-- [x] `vault` helper: encrypted disk image for archives (`homecider vault create | open | close | list`); create requires reopening with the saved password. `list` and input checks tested; create/open need a person to type the password
-- [x] `dashboard` module: Homepage on port 3000 with a Mac status panel and widgets for the enabled services, Docker access through a read-only proxy (`docs/dashboard.md`). Tested on one Mac with a full `apply`; `uninstall` not yet tested
-- [ ] Automate the remaining app wiring where an API exists (Seerr, Prowlarr, Jellyfin library refresh)
-- [x] CI: shellcheck and BATS tests
-- [ ] CI: `homecider doctor` dry run
-- [ ] Fresh-install test on a second Mac

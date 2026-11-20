@@ -253,6 +253,7 @@ and resets `pmset` to the macOS defaults (sleep on). SSH password login is allow
 | [docs/remote-access.md](docs/remote-access.md) | Reaching Jellyfin and Immich away from home with Tailscale |
 | [docs/dashboard.md](docs/dashboard.md) | The `dashboard` module: what it shows, API keys, access |
 | [homecider.env.example](homecider.env.example) | Every setting, with defaults |
+| [CHANGELOG.md](CHANGELOG.md) | Changes in each release, and what is not yet tested |
 
 ## Contributing
 
