@@ -8,13 +8,10 @@
 
 HomeCider helps you turn an Apple Silicon Mac into a private home server. It brings together media streaming, photo and video backups, encrypted off-site backups, and system-level security in one automated setup.
 
-It builds on established open-source projects and handles the routine work of keeping your services running and up to date.
-
 [![shellcheck](https://github.com/NipunaRanasinghe/homecider/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/NipunaRanasinghe/homecider/actions/workflows/shellcheck.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![macOS on Apple Silicon](https://img.shields.io/badge/macOS-Apple%20Silicon-black?logo=apple)
 ![Status: 0.1.0-dev](https://img.shields.io/badge/status-0.1.0--dev-orange)
-[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 [Quick start](#quick-start) ·
 [What you get](#what-you-get) ·
@@ -83,12 +80,10 @@ Jellyfin runs outside Docker because containers on macOS cannot use VideoToolbox
 
 ## Before you install
 
-HomeCider is intended for a Mac that stays at home and is available most of the time. A dedicated machine is recommended because HomeCider changes settings across the
-whole Mac: it disables sleep (also with the lid closed), turns off File Sharing and Screen Sharing, makes your
-home folder private to other accounts, upgrades its own Homebrew apps every week, and on laptops shuts the Mac down
-at 15% battery (`BATTERY_SHUTDOWN_PCT`). Every setting and its default is in
+HomeCider is intended for a Mac that stays at home and is available most of the time. A dedicated machine is
+recommended because HomeCider changes settings for the whole Mac; the full list is in
+[What `apply` changes on your Mac](#what-apply-changes-on-your-mac). Every setting and its default is in
 [`homecider.env.example`](homecider.env.example).
-The full list of system changes is in [What `apply` changes on your Mac](#what-apply-changes-on-your-mac).
 
 > [!WARNING]
 > **After a restart or power cut, everything stays down until someone unlocks the Mac in person.** With
@@ -108,8 +103,7 @@ The full list of system changes is in [What `apply` changes on your Mac](#what-a
 ### Requirements
 
 - Apple Silicon Mac (M1 or later), current or previous macOS release: MacBook (lid closed), Mac mini, iMac or
-  Mac Studio. Intel Macs are not supported: Apple no longer releases new macOS versions for them, and HomeCider
-  is tested only on Apple Silicon.
+  Mac Studio. Intel Macs are not supported ([docs/DESIGN.md](docs/DESIGN.md)).
 - [Homebrew](https://brew.sh)
 - Remote Login (SSH) on, with your SSH public key in `~/.ssh/authorized_keys`. **`apply` turns off SSH password
   login**, so add the key first.
@@ -129,8 +123,7 @@ homecider apply     # sets everything up; asks for your password once for system
 `apply` is designed to be idempotent. You can run it again after changing `homecider.env`, after upgrading
 HomeCider, or to reapply a setting.
 
-To upgrade HomeCider: `brew upgrade homecider && homecider apply`. The new version takes effect only after
-`apply`, so the weekly update job does not upgrade HomeCider itself.
+To upgrade HomeCider: `brew upgrade homecider && homecider apply`.
 
 <details>
 <summary>Install from a git clone instead</summary>
@@ -204,6 +197,7 @@ The `backup` module backs vaults up as they are, still encrypted.
 
 - HomeCider's Homebrew apps (OrbStack, Jellyfin, restic) and container images update every Sunday at 04:00
   (`UPDATE_WEEKDAY`, `UPDATE_HOUR`). Set `UPDATE_ALL_HOMEBREW=true` to upgrade every Homebrew app.
+- HomeCider itself is not upgraded by this job: a new version takes effect only after `apply` (see [Install](#install)).
 - After the update, dangling Docker images (untagged, unused) are removed; `UPDATE_PRUNE_IMAGES=false` keeps them.
 - Immich is pinned; you get a message when a new release exists.
 - macOS updates download automatically and wait for you, because each one restarts into the FileVault unlock
@@ -219,17 +213,6 @@ The `backup` module backs vaults up as they are, still encrypted.
 🔒 listens on 127.0.0.1 only (use an SSH tunnel) · dashed: optional or off by default.
 Without a VPN configured, qBittorrent sends nothing; the home connection is an explicit opt-in.
 
-### Repository layout
-
-```
-bin/homecider          the command
-lib/common.sh          config loading, defaults, helpers
-modules/<name>/        root.sh (runs with sudo) and/or user.sh, plus the module's files
-homecider.env.example  every setting, with defaults
-docs/                  design decisions and module guides
-tests/                 BATS tests for lib/common.sh (run: bats tests)
-```
-
 ## What `apply` changes on your Mac
 
 So you can review it before running:
@@ -237,7 +220,7 @@ So you can review it before running:
 | Area | Change |
 |---|---|
 | SSH | `/etc/ssh/sshd_config.d/000-homecider.conf`: password and keyboard-interactive login off, root login off, only your user allowed |
-| Power | `pmset`: sleep off (also with the lid closed), wake on network |
+| Power | `pmset`: sleep off (also with the lid closed), wake on network. Laptops shut down at 15% battery (`BATTERY_SHUTDOWN_PCT`) |
 | Network | Application firewall on with stealth mode; File Sharing, Screen Sharing and Remote Apple Events off |
 | Software Update | Automatic check and download; no automatic install |
 | launchd | LaunchAgents `io.homecider.alerts` and `io.homecider.update`; on laptops, LaunchDaemon `io.homecider.low-battery` |

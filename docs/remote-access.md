@@ -46,7 +46,7 @@ With FileVault on, Tailscale starts only after the Mac is unlocked in person, li
 Jellyfin treats Tailscale addresses (`100.64.0.0/10`) as outside your home network. With remote connections off,
 the Jellyfin page loads through Tailscale but then shows "Select server" or "Connection failure".
 
-1. On the home network, open `http://<mac>.local:8096` (on Android: the Mac's local IP address instead of `<mac>.local`) and log in as admin.
+1. On the home network, open Jellyfin at the Mac's local address (for example `http://192.168.1.6:8096`) and log in as admin.
 2. Dashboard → Networking → turn on **Allow remote connections to this server** → Save.
 3. Restart Jellyfin: `sudo launchctl kickstart -k system/io.homecider.jellyfin` (no password needed).
 
@@ -95,6 +95,8 @@ The traffic is plain HTTP inside the Tailscale tunnel. The tunnel encrypts it be
   `ssh -L 8080:127.0.0.1:8080 <mac-name>.<tailnet>.ts.net`.
 - Seerr, Radarr, Sonarr and Prowlarr (with the `downloads` module) listen on all interfaces, so every device in
   your tailnet can reach them. Each requires a login.
+- The dashboard (port 3000, with the `dashboard` module) has **no login**, so every device in your tailnet can
+  open it.
 - Every device signed in to your Tailscale account can reach the Mac. To limit this, use Tailscale access
   controls (ACLs) in the admin console.
 
