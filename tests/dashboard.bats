@@ -55,7 +55,7 @@ sys.exit(0 if eval(sys.argv[1]) else 1)' "$1"
   echo 'MODULES="core media photos dashboard"' > "$HC_CONFIG"
   printf '%s\n' "JELLYFIN_API_KEY='abc'\\''\"def'" "IMMICH_API_KEY='imm123'" > "$HC_STATE/secrets.env"
   config
-  services 'groups["Media"]["Jellyfin"]["widget"] == {"type": "jellyfin", "url": "http://host.docker.internal:8096", "key": "abc'"'"'\"def", "version": 2, "enableBlocks": True}'
+  services 'groups["Media"]["Jellyfin"]["widget"] == {"type": "jellyfin", "url": "http://host.docker.internal:8096", "key": "abc'"'"'\"def", "version": 2, "enableBlocks": True, "enableNowPlaying": False}'
   services 'groups["Media"]["Immich"]["widget"]["key"] == "imm123"'
 }
 

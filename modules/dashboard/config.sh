@@ -25,14 +25,14 @@ service() {
   [ -z "$3" ] || echo "        href: $3"
   [ -z "$4" ] || { echo "        server: homecider"; echo "        container: $4"; }
 }
-# widget TYPE URL [KEY=VALUE ...]: values are quoted, except version (a number) and enableBlocks (true/false).
+# widget TYPE URL [KEY=VALUE ...]: values are quoted, except version (a number) and enable* (true/false).
 widget() {
   echo "        widget:"
   echo "          type: $1"
   echo "          url: $2"
   shift 2
   for kv in "$@"; do
-    case "$kv" in version=*|enableBlocks=*) echo "          ${kv%%=*}: ${kv#*=}" ;; *) echo "          ${kv%%=*}: $(yq "${kv#*=}")" ;; esac
+    case "$kv" in version=*|enable*=*) echo "          ${kv%%=*}: ${kv#*=}" ;; *) echo "          ${kv%%=*}: $(yq "${kv#*=}")" ;; esac
   done
 }
 
@@ -74,7 +74,7 @@ EOT
     echo "- Media:"
     if has_module media; then
       service Jellyfin jellyfin.png "http://$link:8096" ""
-      [ -z "${JELLYFIN_API_KEY:-}" ] || widget jellyfin "$H:8096" "key=$JELLYFIN_API_KEY" "version=2" "enableBlocks=true"
+      [ -z "${JELLYFIN_API_KEY:-}" ] || widget jellyfin "$H:8096" "key=$JELLYFIN_API_KEY" "version=2" "enableBlocks=true" "enableNowPlaying=false"
     fi
     if has_module photos; then
       service Immich immich.png "http://$link:2283" immich_server

@@ -18,7 +18,7 @@ launchd jobs are loaded. The alerts job writes these values to `status.json` eve
 
 | Service | Link | Running / stopped | Numbers (needs a key) |
 |---|---|---|---|
-| Jellyfin | yes | no (not a container) | movies, series, episodes; what is playing. Key: see below |
+| Jellyfin | yes | no (not a container) | movies, series, episodes (not what is playing: the page has no login). Key: see below |
 | Immich | yes | yes | users, photos, videos, storage. Key: see below |
 | Seerr | yes | yes | pending, approved, available requests. Key read from Seerr's `settings.json` |
 | Radarr, Sonarr, Prowlarr | yes | yes | queue, missing, grabs. Keys already in `secrets.env` |
