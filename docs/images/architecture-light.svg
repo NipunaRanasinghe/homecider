@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 720" width="1240" height="720" role="img" aria-label="HomeCider architecture: devices on the home network reach an Apple Silicon Mac that runs Jellyfin, Immich, an optional dashboard and an optional download chain; backups, alerts and downloads are the only outgoing connections.">
+<defs>
+<marker id="a-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#59636e"/></marker>
+<marker id="a-dls" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#bc4c00"/></marker>
+<marker id="a-bks" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0e7a6d"/></marker>
+</defs>
+<style>.t{font:13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;fill:#1f2328}.b{font:600 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;fill:#1f2328}.s{font:12px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;fill:#59636e}.h{font:700 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;letter-spacing:.08em;fill:#59636e}.m{font:11px ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace}.l{font:11px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;fill:#59636e}.T{font:700 16px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;fill:#1f2328}</style>
+<rect width="1240" height="720" rx="12" fill="#ffffff"/>
+<text x="20" y="50" class="h">ON YOUR HOME NETWORK</text>
+<rect x="20" y="72" width="180" height="56" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="32" y="95" class="b">Phone</text>
+<text x="32" y="114" class="s">Immich app · Jellyfin</text>
+<rect x="20" y="144" width="180" height="56" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="32" y="167" class="b">TV · laptop · tablet</text>
+<text x="32" y="186" class="s">Jellyfin · browser</text>
+<rect x="20" y="216" width="180" height="56" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="32" y="239" class="b">Your computer</text>
+<text x="32" y="258" class="s">SSH</text>
+<rect x="230" y="72" width="170" height="200" rx="8" fill="#eef1f4" stroke="#57606a" stroke-width="1.5"/>
+<text x="242" y="95" class="b">Home router</text>
+<text x="242" y="114" class="s">no port forwarding</text>
+<path d="M200,100 L228,100" fill="none" stroke="#59636e" stroke-width="1.6" marker-end="url(#a-muted)"/>
+<path d="M200,172 L228,172" fill="none" stroke="#59636e" stroke-width="1.6" marker-end="url(#a-muted)"/>
+<path d="M200,244 L228,244" fill="none" stroke="#59636e" stroke-width="1.6" marker-end="url(#a-muted)"/>
+<rect x="230" y="296" width="170" height="56" rx="8" fill="#eef1f4" stroke="#57606a" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="242" y="319" class="b">Tailscale</text>
+<text x="242" y="338" class="s">from away</text>
+<path d="M400,172 L428,172" fill="none" stroke="#59636e" stroke-width="1.6" marker-end="url(#a-muted)"/>
+<path d="M400,324 L428,324" fill="none" stroke="#59636e" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a-muted)"/>
+<text x="20" y="400" class="h">KEY</text>
+<rect x="20" y="412" width="51" height="18" rx="4" fill="#ffffff" stroke="#57606a" stroke-width="1"/>
+<text x="25" y="425" class="m" fill="#57606a">module</text>
+<text x="92" y="425" class="l">HomeCider module that adds it</text>
+<text x="20" y="454" class="l">🔒  only reachable on the Mac</text>
+<text x="38" y="470" class="l">(use an SSH tunnel)</text>
+<rect x="20" y="486" width="26" height="14" rx="3" fill="none" stroke="#59636e" stroke-dasharray="5 3"/>
+<text x="54" y="498" class="l">optional or off by default</text>
+<rect x="430" y="20" width="580" height="604" rx="12" fill="#f6f8fa" stroke="#424a53" stroke-width="2"/>
+<text x="448" y="48" class="T">Apple Silicon Mac · macOS</text>
+<text x="448" y="66" class="s">configured by HomeCider · containers in OrbStack</text>
+<rect x="448" y="80" width="544" height="44" rx="8" fill="#eaeef2" stroke="#57606a" stroke-width="1.5"/>
+<rect x="460" y="93" width="37" height="18" rx="4" fill="#ffffff" stroke="#57606a" stroke-width="1"/>
+<text x="465" y="106" class="m" fill="#57606a">core</text>
+<text x="512" y="106" class="t">FileVault · firewall · key-only SSH · no sleep</text>
+<rect x="448" y="146" width="168" height="72" rx="8" fill="#ddf4ff" stroke="#0969da" stroke-width="1.5"/>
+<text x="460" y="169" class="b">Jellyfin</text>
+<text x="460" y="188" class="s">native · hardware</text>
+<text x="460" y="204" class="s">transcoding</text>
+<rect x="562" y="129" width="44" height="18" rx="4" fill="#ffffff" stroke="#0969da" stroke-width="1"/>
+<text x="567" y="142" class="m" fill="#0969da">media</text>
+<rect x="636" y="146" width="168" height="72" rx="8" fill="#dafbe1" stroke="#1a7f37" stroke-width="1.5"/>
+<text x="648" y="169" class="b">Immich</text>
+<text x="648" y="188" class="s">with database and ML</text>
+<rect x="743" y="129" width="51" height="18" rx="4" fill="#ffffff" stroke="#1a7f37" stroke-width="1"/>
+<text x="748" y="142" class="m" fill="#1a7f37">photos</text>
+<rect x="824" y="146" width="168" height="72" rx="8" fill="#fbefff" stroke="#8250df" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="836" y="169" class="b">Homepage</text>
+<text x="836" y="188" class="s">dashboard</text>
+<rect x="909" y="129" width="73" height="18" rx="4" fill="#ffffff" stroke="#8250df" stroke-width="1"/>
+<text x="914" y="142" class="m" fill="#8250df">dashboard</text>
+<rect x="448" y="240" width="168" height="52" rx="8" fill="#ffffff" stroke="#8c959f" stroke-width="1.5"/>
+<text x="460" y="263" class="b">Media library</text>
+<text x="460" y="282" class="s">~/Media</text>
+<rect x="636" y="240" width="168" height="52" rx="8" fill="#ffffff" stroke="#8c959f" stroke-width="1.5"/>
+<text x="648" y="263" class="b">Photo library</text>
+<text x="648" y="282" class="s">~/Photos/immich</text>
+<rect x="824" y="240" width="168" height="52" rx="8" fill="#ffffff" stroke="#8c959f" stroke-width="1.5"/>
+<text x="836" y="263" class="b">Vaults</text>
+<text x="836" y="282" class="s">encrypted disk images</text>
+<path d="M532,218 L532,238" fill="none" stroke="#59636e" stroke-width="1.6" marker-end="url(#a-muted)"/>
+<text x="540" y="233" class="l">reads only</text>
+<path d="M720,218 L720,238" fill="none" stroke="#59636e" stroke-width="1.6" marker-end="url(#a-muted)"/>
+<rect x="448" y="310" width="544" height="196" rx="8" fill="#f6f8fa" stroke="#bc4c00" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="460" y="320" width="73" height="18" rx="4" fill="#ffffff" stroke="#bc4c00" stroke-width="1"/>
+<text x="465" y="333" class="m" fill="#bc4c00">downloads</text>
+<text x="546" y="333" class="s">off by default</text>
+<rect x="466" y="350" width="150" height="56" rx="8" fill="#fff1e5" stroke="#bc4c00" stroke-width="1.5"/>
+<text x="478" y="373" class="b">Seerr</text>
+<text x="478" y="392" class="s">request page</text>
+<rect x="640" y="350" width="160" height="56" rx="8" fill="#fff1e5" stroke="#bc4c00" stroke-width="1.5"/>
+<text x="652" y="373" class="b">Radarr · Sonarr</text>
+<text x="652" y="392" class="s">pick and file releases</text>
+<rect x="824" y="350" width="150" height="56" rx="8" fill="#fff1e5" stroke="#bc4c00" stroke-width="1.5"/>
+<text x="836" y="383.0" class="b">Prowlarr</text>
+<rect x="466" y="438" width="150" height="56" rx="8" fill="#fff1e5" stroke="#bc4c00" stroke-width="1.5"/>
+<text x="478" y="461" class="b">Maintainerr 🔒</text>
+<text x="478" y="480" class="s">removes watched</text>
+<rect x="640" y="438" width="160" height="56" rx="8" fill="#fff1e5" stroke="#bc4c00" stroke-width="1.5"/>
+<text x="652" y="461" class="b">qBittorrent 🔒</text>
+<text x="652" y="480" class="s">downloads</text>
+<rect x="824" y="438" width="150" height="56" rx="8" fill="#fff1e5" stroke="#bc4c00" stroke-width="1.5"/>
+<text x="836" y="461" class="b">Gluetun</text>
+<text x="836" y="480" class="s">VPN kill switch</text>
+<path d="M616,378 L638,378" fill="none" stroke="#bc4c00" stroke-width="1.6" marker-end="url(#a-dls)"/>
+<path d="M800,378 L822,378" fill="none" stroke="#bc4c00" stroke-width="1.6" marker-start="url(#a-dls)" marker-end="url(#a-dls)"/>
+<path d="M720,406 L720,436" fill="none" stroke="#bc4c00" stroke-width="1.6" marker-end="url(#a-dls)"/>
+<path d="M800,466 L822,466" fill="none" stroke="#bc4c00" stroke-width="1.6" marker-end="url(#a-dls)"/>
+<path d="M541,438 L541,422 L650,422 L650,408" fill="none" stroke="#bc4c00" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a-dls)"/>
+<text x="548" y="432" class="l">cleanup</text>
+<text x="448" y="526" class="h">IN THE BACKGROUND</text>
+<rect x="448" y="550" width="168" height="56" rx="8" fill="#eaeef2" stroke="#57606a" stroke-width="1.5"/>
+<text x="460" y="573" class="b">Updates</text>
+<text x="460" y="592" class="s">weekly</text>
+<rect x="569" y="533" width="37" height="18" rx="4" fill="#ffffff" stroke="#57606a" stroke-width="1"/>
+<text x="574" y="546" class="m" fill="#57606a">core</text>
+<rect x="636" y="550" width="168" height="56" rx="8" fill="#d7f5f0" stroke="#0e7a6d" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="648" y="573" class="b">Backup</text>
+<text x="648" y="592" class="s">nightly, encrypted</text>
+<rect x="743" y="533" width="51" height="18" rx="4" fill="#ffffff" stroke="#0e7a6d" stroke-width="1"/>
+<text x="748" y="546" class="m" fill="#0e7a6d">backup</text>
+<rect x="824" y="550" width="168" height="56" rx="8" fill="#eaeef2" stroke="#57606a" stroke-width="1.5"/>
+<text x="836" y="573" class="b">Alerts</text>
+<text x="836" y="592" class="s">every 5 minutes</text>
+<rect x="945" y="533" width="37" height="18" rx="4" fill="#ffffff" stroke="#57606a" stroke-width="1"/>
+<text x="950" y="546" class="m" fill="#57606a">core</text>
+<text x="1040" y="50" class="h">ON THE INTERNET</text>
+<rect x="1040" y="350" width="180" height="56" rx="8" fill="#eef1f4" stroke="#57606a" stroke-width="1.5"/>
+<text x="1052" y="373" class="b">Indexers</text>
+<text x="1052" y="392" class="s">search sites</text>
+<rect x="1040" y="438" width="180" height="56" rx="8" fill="#eef1f4" stroke="#57606a" stroke-width="1.5"/>
+<text x="1052" y="461" class="b">Torrent peers</text>
+<text x="1052" y="480" class="s">only through the VPN</text>
+<rect x="1040" y="550" width="180" height="56" rx="8" fill="#eef1f4" stroke="#57606a" stroke-width="1.5"/>
+<text x="1052" y="573" class="b">ntfy.sh</text>
+<text x="1052" y="592" class="s">alerts to your phone</text>
+<rect x="1040" y="648" width="180" height="56" rx="8" fill="#eef1f4" stroke="#57606a" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="1052" y="671" class="b">Backblaze B2 or S3</text>
+<text x="1052" y="690" class="s">off-site backup</text>
+<path d="M974,378 L1038,378" fill="none" stroke="#bc4c00" stroke-width="1.6" marker-end="url(#a-dls)"/>
+<path d="M974,466 L1038,466" fill="none" stroke="#bc4c00" stroke-width="1.6" marker-end="url(#a-dls)"/>
+<path d="M992,578 L1038,578" fill="none" stroke="#59636e" stroke-width="1.6" marker-end="url(#a-muted)"/>
+<path d="M720,606 L720,676 L1038,676" fill="none" stroke="#0e7a6d" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a-bks)"/>
+</svg>
