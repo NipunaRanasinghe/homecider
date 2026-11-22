@@ -98,5 +98,9 @@ EOT
     service Maintainerr maintainerr.png "" maintainerr
     [ "$DOWNLOADS_NETWORK" != vpn ] || [ -z "${VPN_SERVICE_PROVIDER:-}" ] || service "Gluetun VPN" gluetun.png "" gluetun
   fi
+
+  # Your own groups, added as they are (docs/dashboard.md).
+  extra="$(dirname "$HC_CONFIG")/dashboard-services.yaml"
+  [ ! -f "$extra" ] || cat "$extra"
 } > "$dir/services.yaml"
 )

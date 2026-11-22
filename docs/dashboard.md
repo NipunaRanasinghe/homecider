@@ -28,6 +28,10 @@ launchd jobs are loaded. The alerts job writes these values to `status.json` eve
 Links use the Mac's Tailscale name when Tailscale is installed (works at home and away while Tailscale is on in
 the phone), otherwise its local IP address.
 
+**Your own groups**: put them in `~/.config/homecider/dashboard-services.yaml` (next to `homecider.env`), in
+Homepage's [services.yaml](https://gethomepage.dev/configs/services/) format. `apply` adds the file as it is,
+after the generated groups. The page has no login: anyone who can open it sees these groups too.
+
 ## Jellyfin and Immich keys (once)
 
 Jellyfin: Dashboard → API Keys → **+**, name it `homecider`. Then on the Mac:

@@ -77,6 +77,16 @@ sys.exit(0 if eval(sys.argv[1]) else 1)' "$1"
   services 'groups["Downloads"]["Gluetun VPN"]["container"] == "gluetun"'
 }
 
+@test "config: adds dashboard-services.yaml after the generated groups" {
+  echo 'MODULES="core media dashboard"' > "$HC_CONFIG"
+  printf '%s\n' '- Home:' '    - Router:' '        href: http://192.168.1.1' > "$BATS_TEST_TMPDIR/dashboard-services.yaml"
+  config
+  services 'list(groups) == ["Mac", "Media", "Home"] and groups["Home"]["Router"]["href"] == "http://192.168.1.1"'
+  rm "$BATS_TEST_TMPDIR/dashboard-services.yaml"
+  config
+  services '"Home" not in groups'
+}
+
 @test "status: writes valid JSON with every field" {
   echo 'MODULES="core dashboard"' > "$HC_CONFIG"
   mkdir -p "$HC_STATE/alerts"; touch "$HC_STATE/alerts/disk" "$HC_STATE/alerts/immich-v9"
