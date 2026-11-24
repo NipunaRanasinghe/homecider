@@ -20,7 +20,7 @@ none and does not recommend any.
 
 ## Testing on your Mac
 
-Reports from Macs other than the MacBook Air M1 it was built on are especially useful:
+Reports from different Mac models are especially useful:
 
 1. Fresh install following the README, on a Mac you can reset.
 2. Run `homecider apply` twice: the second run must finish without errors and without restarting Jellyfin.

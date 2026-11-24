@@ -37,8 +37,7 @@ homecider init && homecider doctor && homecider apply
 > Read [Before you install](#before-you-install) first.
 
 > [!NOTE]
-> Early development (0.1.0-dev). Tested on a MacBook Air M1 with the current macOS.
-> Other Apple Silicon Macs should work; reports are welcome.
+> Early development (0.1.0-dev). Reports from any Apple Silicon Mac are welcome.
 
 ## What you get
 
@@ -65,7 +64,7 @@ HomeCider is designed for use on your home network. It does not configure public
 
 <p align="center">
   <img src="docs/images/dashboard.png" alt="HomeCider dashboard at phone width: Mac status panel, then Jellyfin, Immich and the download apps with live counts" width="300"/><br/>
-  <sub>The dashboard at phone width on a MacBook Air M1 (<code>dashboard</code> module, off by default). See <a href="docs/dashboard.md">docs/dashboard.md</a>.</sub>
+  <sub>The dashboard at phone width (<code>dashboard</code> module, off by default). See <a href="docs/dashboard.md">docs/dashboard.md</a>.</sub>
 </p>
 
 ### Why macOS and not Linux
@@ -166,7 +165,7 @@ Use `bin/homecider` wherever this README says `homecider`. To upgrade: `git pull
 
 <p align="center">
   <img src="docs/images/status.svg" alt="Output of homecider status" width="660"/><br/>
-  <sub>Output of <code>homecider status</code> on a MacBook Air M1 with <code>core</code>, <code>media</code>, <code>photos</code> and <code>downloads</code> enabled.</sub>
+  <sub>Output of <code>homecider status</code> with <code>core</code>, <code>media</code>, <code>photos</code> and <code>downloads</code> enabled.</sub>
 </p>
 
 ## Everyday use

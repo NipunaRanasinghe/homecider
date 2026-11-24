@@ -25,7 +25,6 @@ First release, planned as 0.1.0.
 
 ### Not yet tested
 
-- Only tested on one Mac (MacBook Air M1).
 - `downloads` with a real VPN provider: the Gluetun setup, `homecider leaktest` and the port forwarding alert.
 - `backup` against Backblaze B2 (tested with a local repository only).
 - `vault create` and `vault open`, which need a person to type the password.
