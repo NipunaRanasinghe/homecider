@@ -116,6 +116,7 @@ Run these commands on the Mac you want to use as your server:
 brew install nipunaranasinghe/homecider/homecider
 homecider init      # writes ~/.config/homecider/homecider.env; review MODULES and paths
 homecider doctor    # checks prerequisites
+homecider apply --dry-run   # lists what apply would install and change; changes nothing
 homecider apply     # sets everything up; asks for your password once for system changes
 ```
 
@@ -155,7 +156,7 @@ Use `bin/homecider` wherever this README says `homecider`. To upgrade: `git pull
 |---|---|
 | `homecider init` | Creates `homecider.env` from the example |
 | `homecider doctor` | Checks prerequisites and configuration |
-| `homecider apply` | Sets up every enabled module (asks for sudo once); safe to re-run |
+| `homecider apply` | Sets up every enabled module (asks for sudo once); safe to re-run. `--dry-run` lists the steps and changes nothing |
 | `homecider status` | Shows services, jobs, containers, disk, battery and active alerts |
 | `homecider backup now \| snapshots \| restore-test` | Runs a backup, lists snapshots, or tests a restore (`backup` module) |
 | `homecider vault create \| open \| close \| list` | Manages encrypted disk images for archives |

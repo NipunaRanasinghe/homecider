@@ -1,6 +1,15 @@
 # downloads module
 
-Opt-in: add `downloads` to `MODULES` in `homecider.env`.
+Opt-in: add `downloads` to `MODULES` in `homecider.env` and set `DOWNLOADS_ACCEPT_RESPONSIBILITY=true`.
+`homecider doctor` and `homecider apply` fail while `downloads` is in `MODULES` without that setting.
+
+## Legal use
+
+This module installs download and library tools. It does not include or point to any content source.
+You choose the indexers and what to download, and you are responsible for following copyright law
+where you live. Download only files you have the right to download, such as public-domain films,
+Creative Commons works, or copies of media you own where the law allows that. Setting
+`DOWNLOADS_ACCEPT_RESPONSIBILITY=true` records that you have read this.
 
 ## Network
 

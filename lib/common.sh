@@ -37,6 +37,7 @@ HC_ROOT_STABLE="$(echo "$HC_ROOT" | sed 's#/Cellar/homecider/[^/]*/#/opt/homecid
 : "${DOWNLOADS_CONFIG_DIR:=$DATA_DIR/downloads}"
 : "${DOWNLOADS_NETWORK:=vpn}"
 : "${DOWNLOADS_ALLOW_HOME_IP:=false}"
+: "${DOWNLOADS_ACCEPT_RESPONSIBILITY:=false}"
 : "${DOCKER_MEMORY_MIB:=6144}"
 : "${DISK_ALERT_PCT:=85}"
 : "${BATTERY_SHUTDOWN_PCT:=15}"

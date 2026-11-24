@@ -1,7 +1,7 @@
 #!/bin/sh
 # homecider: turn any Mac (Apple Silicon) into a private home server.
 #   homecider init     create homecider.env from the example
-#   homecider apply    set up every enabled module (asks for sudo once); safe to re-run
+#   homecider apply [--dry-run]   set up every enabled module (asks for sudo once); safe to re-run
 #   homecider status   show services, jobs, disk and battery
 #   homecider doctor   check prerequisites and configuration
 #   homecider uninstall   stop services and remove system changes; data is kept
@@ -50,6 +50,8 @@ cmd_doctor() {
     "http://[$v6]:8096 must time out (README: Before you install)"
   has_battery && note "battery present: low-battery shutdown at ${BATTERY_SHUTDOWN_PCT}%; set the charge limit in System Settings > Battery"
   if has_module downloads; then
+    [ "$DOWNLOADS_ACCEPT_RESPONSIBILITY" = true ] && pass "downloads: responsibility accepted" ||
+      fail "downloads: set DOWNLOADS_ACCEPT_RESPONSIBILITY=true after reading docs/downloads.md (Legal use)"
     [ "$DOWNLOADS_NETWORK" = vpn ] && note "downloads: VPN-only; nothing downloads until a VPN is configured" ||
       note "downloads: home connection; your IP is visible to peers"
   fi
@@ -59,24 +61,33 @@ cmd_doctor() {
 cmd_apply() {
   . "$HC_ROOT/lib/common.sh"
   [ "$(id -u)" != 0 ] || die "run apply as your user, not with sudo (it asks for sudo itself)"
-  cmd_doctor || die "fix the FAIL items above first"
-  mkdir -p "$HC_STATE" "$HC_LOGS"; chmod 700 "$HC_STATE"
+  case "${1:-}" in "") dry=false ;; --dry-run) dry=true ;; *) die "usage: homecider apply [--dry-run]" ;; esac
+  if ! cmd_doctor; then
+    $dry || die "fix the FAIL items above first"
+    echo "apply would stop here until the FAIL items above are fixed."
+  fi
 
-  # Apps from Homebrew (as the user).
   casks=""; uses_docker && casks="$casks orbstack"; has_module media && casks="$casks jellyfin"
-  for c in $casks; do brew list --cask "$c" >/dev/null 2>&1 || brew install --cask "$c"; done
-
-  # Root parts, under one sudo prompt.
   roots=""; for m in $MODULES; do [ -f "$HC_ROOT/modules/$m/root.sh" ] && roots="$roots $m"; done
+  # dashboard runs last: it reads the API keys the other modules store.
+  users=""; for m in $MODULES; do [ "$m" != dashboard ] && [ -f "$HC_ROOT/modules/$m/user.sh" ] && users="$users $m"; done
+  has_module dashboard && users="$users dashboard"
+
+  if $dry; then
+    # Prints the first comment line of each script that apply would run. Changes nothing.
+    echo "Dry run. apply would:"
+    for c in $casks; do brew list --cask "$c" >/dev/null 2>&1 || echo "  install $c (Homebrew cask)"; done
+    for m in $roots; do echo "  as root: $(sed -n '2s/^# //p' "$HC_ROOT/modules/$m/root.sh")"; done
+    for m in $users; do echo "  as $HC_USER: $(sed -n '2s/^# //p' "$HC_ROOT/modules/$m/user.sh")"; done
+    echo "Nothing was changed. Full list: README, What apply changes on your Mac."
+    return
+  fi
+
+  mkdir -p "$HC_STATE" "$HC_LOGS"; chmod 700 "$HC_STATE"
+  for c in $casks; do brew list --cask "$c" >/dev/null 2>&1 || brew install --cask "$c"; done
   log "root steps:$roots (sudo)"
   sudo sh -c 'for m in '"$roots"'; do sh "'"$HC_ROOT"'/modules/$m/root.sh" || exit 1; done'
-
-  # User parts. dashboard runs last: it reads the API keys the other modules store.
-  for m in $MODULES; do
-    [ "$m" = dashboard ] && continue
-    [ -f "$HC_ROOT/modules/$m/user.sh" ] && sh "$HC_ROOT/modules/$m/user.sh"
-  done
-  if has_module dashboard; then sh "$HC_ROOT/modules/dashboard/user.sh"; fi
+  for m in $users; do sh "$HC_ROOT/modules/$m/user.sh"; done
   log "apply finished"
 }
 
@@ -128,7 +139,7 @@ cmd_backup() {
 
 case "${1:-help}" in
   init) cmd_init ;;
-  apply) cmd_apply ;;
+  apply) shift; cmd_apply "$@" ;;
   status) cmd_status ;;
   doctor) cmd_doctor ;;
   uninstall) sh "$HC_ROOT/modules/core/uninstall.sh" ;;
