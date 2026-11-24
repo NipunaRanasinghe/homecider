@@ -11,7 +11,7 @@ HomeCider helps you turn an Apple Silicon Mac into a private home server. It bri
 [![shellcheck](https://github.com/NipunaRanasinghe/homecider/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/NipunaRanasinghe/homecider/actions/workflows/shellcheck.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![macOS on Apple Silicon](https://img.shields.io/badge/macOS-Apple%20Silicon-black?logo=apple)
-![Status: 0.1.0-dev](https://img.shields.io/badge/status-0.1.0--dev-orange)
+![Status: 0.1.0](https://img.shields.io/badge/status-0.1.0-orange)
 
 [Quick start](#quick-start) ·
 [What you get](#what-you-get) ·
@@ -37,7 +37,7 @@ homecider init && homecider doctor && homecider apply
 > Read [Before you install](#before-you-install) first.
 
 > [!NOTE]
-> Early development (0.1.0-dev). Reports from any Apple Silicon Mac are welcome.
+> Early development (0.1.0). Reports from any Apple Silicon Mac are welcome.
 
 ## What you get
 

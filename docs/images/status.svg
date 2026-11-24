@@ -3,7 +3,7 @@
 <circle cx="22" cy="20" r="6" fill="#FF5F57"/><circle cx="42" cy="20" r="6" fill="#FEBC2E"/><circle cx="62" cy="20" r="6" fill="#28C840"/>
 <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5">
 <text x="22" y="58" fill="#7EE787" xml:space="preserve">$ homecider status</text>
-<text x="22" y="78" fill="#E6EDF3" xml:space="preserve">HomeCider 0.1.0-dev  ·  modules: core media photos downloads</text>
+<text x="22" y="78" fill="#E6EDF3" xml:space="preserve">HomeCider 0.1.0  ·  modules: core media photos downloads</text>
 <text x="22" y="98" fill="#E6EDF3" xml:space="preserve">Disk: 46% used, 240Gi free</text>
 <text x="22" y="118" fill="#E6EDF3" xml:space="preserve">Battery: 80%; discharging</text>
 <text x="22" y="138" fill="#E6EDF3" xml:space="preserve">Jobs:</text>

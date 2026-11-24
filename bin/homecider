@@ -12,7 +12,7 @@
 set -eu
 # Follow symlinks (Homebrew links bin/homecider into /opt/homebrew/bin).
 HC_ROOT="$(cd "$(dirname "$(realpath "$0")")/.." && pwd)"
-HC_VERSION=0.1.0-dev
+HC_VERSION=0.1.0
 
 usage() { sed -n '2,11p' "$HC_ROOT/bin/homecider" | sed 's/^# //'; }
 
