@@ -28,7 +28,8 @@ HomeCider helps you turn an Apple Silicon Mac into a private home server. It bri
 ## Quick start
 
 ```sh
-brew install nipunaranasinghe/tap/homecider
+brew tap nipunaranasinghe/tap && brew trust nipunaranasinghe/tap
+brew install homecider
 homecider init && homecider doctor && homecider apply
 ```
 
@@ -113,7 +114,9 @@ recommended because HomeCider changes settings for the whole Mac; the full list 
 Run these commands on the Mac you want to use as your server:
 
 ```sh
-brew install nipunaranasinghe/tap/homecider
+brew tap nipunaranasinghe/tap
+brew trust nipunaranasinghe/tap   # Homebrew loads formulas from a third-party tap only after you trust it
+brew install homecider
 homecider init      # writes ~/.config/homecider/homecider.env; review MODULES and paths
 homecider doctor    # checks prerequisites
 homecider apply --dry-run   # lists what apply would install and change; changes nothing
