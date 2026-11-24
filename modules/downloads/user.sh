@@ -2,7 +2,7 @@
 # downloads (opt-in): start the download chain, apply qBittorrent settings, quality profiles and cleanup rules.
 # Network: DOWNLOADS_NETWORK=vpn (default) binds qBittorrent to tun0, which only exists once a VPN container runs,
 # so nothing is downloaded before a VPN is set up. DOWNLOADS_NETWORK=home uses the home connection and requires
-# DOWNLOADS_ALLOW_HOME_IP=true: every peer and copyright monitor then sees the home IP address.
+# DOWNLOADS_ALLOW_HOME_IP=true: every peer then sees the home IP address.
 set -eu
 HC_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; . "$HC_ROOT/lib/common.sh"
 dir="$HC_ROOT_STABLE/modules/downloads"

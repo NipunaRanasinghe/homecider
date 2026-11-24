@@ -58,8 +58,8 @@ HomeCider is designed for use on your home network. It does not configure public
 </p>
 
 <p align="center">
-  <img src="docs/images/seerr-discover.jpg" alt="Seerr Discover page listing trending and popular films and shows" width="820"/><br/>
-  <sub>Seerr's Discover page, where people at home request films and shows (<code>downloads</code> module, off by default).</sub>
+  <img src="docs/images/seerr-request.jpg" alt="Seerr page for Big Buck Bunny, the Blender Foundation's Creative Commons film, with a Request button" width="820"/><br/>
+  <sub>Seerr, where people at home request media (<code>downloads</code> module, off by default). Shown: <a href="https://peach.blender.org">Big Buck Bunny</a>, licensed CC BY 3.0 by the Blender Foundation.</sub>
 </p>
 
 <p align="center">

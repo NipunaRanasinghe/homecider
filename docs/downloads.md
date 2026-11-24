@@ -16,7 +16,7 @@ Creative Commons works, or copies of media you own where the law allows that. Se
 | `DOWNLOADS_NETWORK` | Behaviour |
 |---|---|
 | `vpn` (default) | qBittorrent is bound to the `tun0` interface. Until a VPN container provides `tun0`, it sends no peer or tracker traffic. Everything else (requests, search, quality profiles) works. |
-| `home` | Torrent traffic uses your home connection. Every peer, and any copyright monitor in the swarm, sees your home IP address. Requires `DOWNLOADS_ALLOW_HOME_IP=true`. Do not add a router port forward. |
+| `home` | Torrent traffic uses your home connection. Every peer in the swarm sees your home IP address. Requires `DOWNLOADS_ALLOW_HOME_IP=true`. Do not add a router port forward. |
 
 ### Setting up the VPN
 
@@ -37,8 +37,6 @@ Supported variables: `VPN_SERVICE_PROVIDER VPN_TYPE WIREGUARD_PRIVATE_KEY WIREGU
 WIREGUARD_ADDRESSES OPENVPN_USER OPENVPN_PASSWORD SERVER_COUNTRIES SERVER_CITIES SERVER_HOSTNAMES
 VPN_PORT_FORWARDING VPN_PORT_FORWARDING_PROVIDER` (see Gluetun's wiki for your provider). Then run
 `homecider apply`, followed by **`homecider leaktest`** before the first download.
-
-Downloading copyrighted material may be illegal where you live. HomeCider ships no indexers; you choose them.
 
 ## What apply sets up
 
