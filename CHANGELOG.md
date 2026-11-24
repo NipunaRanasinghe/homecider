@@ -12,7 +12,7 @@ First release.
 - `homecider` command: `init`, `doctor`, `apply`, `status`, `uninstall`, `secret set`, `backup`, `vault` and
   `leaktest`. `apply` is safe to run again;
   `apply --dry-run` lists what it would install and change.
-- Install with Homebrew (`brew install nipunaranasinghe/homecider/homecider`) or from a git clone.
+- Install with Homebrew (`brew install nipunaranasinghe/tap/homecider`) or from a git clone.
 - `core` module: key-only SSH, no sleep, firewall in stealth mode, sharing services off, download-only macOS
   updates, push alerts through ntfy, weekly app and container updates, clean shutdown on low battery.
 - `media` module: Jellyfin running natively with VideoToolbox hardware transcoding, as a hidden user.
