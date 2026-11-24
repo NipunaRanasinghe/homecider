@@ -3,7 +3,7 @@
 A [Homepage](https://gethomepage.dev) page on port 3000 that shows the enabled services and the Mac's state, for
 checking the server from a phone. Add `dashboard` to `MODULES`, then run `homecider apply`.
 
-- At home: `http://<local IP of the Mac>:3000`, for example `http://192.168.1.6:3000`. The `.local` name
+- At home: `http://<local IP of the Mac>:3000`, for example `http://192.168.1.50:3000`. The `.local` name
   (`http://<mac>.local:3000`) works on iPhones and Macs, but not on most Android phones.
 - Away, with [Tailscale](remote-access.md): `http://<mac-name>.<tailnet>.ts.net:3000`
 
