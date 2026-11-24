@@ -76,16 +76,19 @@ ensure_secret() {
 }
 set_secret() {   # name value: add or replace
   mkdir -p "$HC_STATE"; touch "$HC_SECRETS"; chmod 600 "$HC_SECRETS"
-  grep -v "^$1=" "$HC_SECRETS" > "$HC_SECRETS.tmp" || true
-  printf '%s=%s\n' "$1" "$(sq "$2")" >> "$HC_SECRETS.tmp"
+  ( umask 077
+    grep -v "^$1=" "$HC_SECRETS" > "$HC_SECRETS.tmp" || true
+    printf '%s=%s\n' "$1" "$(sq "$2")" >> "$HC_SECRETS.tmp" )
   mv "$HC_SECRETS.tmp" "$HC_SECRETS"; chmod 600 "$HC_SECRETS"
   eval "$1=\$2"
 }
 
 # ntfy push message: title, body, tag. Does nothing without a topic.
+# The URL (which contains the topic) goes to curl as a config file on stdin, so it does not show in ps.
 notify() {
   [ -n "${NTFY_TOPIC:-}" ] || return 0
-  curl -fsS -m 15 -H "Title: $1" -H "Tags: $3" -d "$2" "${NTFY_SERVER:-https://ntfy.sh}/$NTFY_TOPIC" >/dev/null
+  printf 'url = "%s/%s"\n' "${NTFY_SERVER:-https://ntfy.sh}" "$NTFY_TOPIC" |
+    curl -fsS -m 15 -K - -H "Title: $1" -H "Tags: $3" -d "$2" >/dev/null
 }
 
 # Load a launchd job from a plist file: domain (system | gui), plist path.

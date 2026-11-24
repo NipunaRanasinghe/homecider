@@ -36,12 +36,13 @@ as_user mkdir -p "$MEDIA_DIR/Movies" "$MEDIA_DIR/Shows"
 case "$MEDIA_DIR/" in
   "$HC_HOME"/*)
     media_top="${MEDIA_DIR#"$HC_HOME"/}"; media_top="${media_top%%/*}"
-    chmod 750 "$HC_HOME"
+    chmod 700 "$HC_HOME"
     # shellcheck disable=SC2010  # ls -le is the only way to read the ACL
     ls -led "$HC_HOME" | grep -q "user:$name allow search" || chmod +a "user:$name allow search" "$HC_HOME"
     # Every other home entry readable by other users becomes private (e.g. ~/Photos, ~/Public, dotfolders).
     for e in "$HC_HOME"/* "$HC_HOME"/.[!.]*; do
       [ -e "$e" ] || continue
+      [ -L "$e" ] && continue   # chmod would change the link's target, which can be outside the home folder
       [ "$(basename "$e")" = "$media_top" ] && continue
       [ -n "$(find "$e" -maxdepth 0 \( -perm -004 -o -perm -001 \))" ] && chmod o-rwx "$e"
     done ;;
@@ -49,7 +50,8 @@ esac
 
 as_user mkdir -p "$HC_STATE"
 mkdir -p "$data" "$cache"; touch "$logf"
-chown -R $name:$name "$data" "$cache" "$logf"
+# Not recursive: _jellyfin can hardlink root-owned files into its own folders, and chown -R would hand them over.
+chown -h $name:$name "$data" "$cache" "$logf"
 chmod 700 "$data" "$cache"
 
 # Let the weekly update job (runs as the owner) restart Jellyfin after a Homebrew upgrade, and nothing else.

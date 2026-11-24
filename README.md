@@ -197,6 +197,8 @@ The `backup` module backs vaults up as they are, still encrypted.
 
 - HomeCider's Homebrew apps (OrbStack, Jellyfin, restic) and container images update every Sunday at 04:00
   (`UPDATE_WEEKDAY`, `UPDATE_HOUR`). Set `UPDATE_ALL_HOMEBREW=true` to upgrade every Homebrew app.
+- The `downloads` images are pinned to exact versions, so the weekly job does not change them. They change
+  when a new HomeCider version updates the pins.
 - HomeCider itself is not upgraded by this job: a new version takes effect only after `apply` (see [Install](#install)).
 - After the update, dangling Docker images (untagged, unused) are removed; `UPDATE_PRUNE_IMAGES=false` keeps them.
 - Immich is pinned; you get a message when a new release exists.
@@ -224,7 +226,7 @@ So you can review it before running:
 | Network | Application firewall on with stealth mode; File Sharing, Screen Sharing and Remote Apple Events off |
 | Software Update | Automatic check and download; no automatic install |
 | launchd | LaunchAgents `io.homecider.alerts` and `io.homecider.update`; on laptops, LaunchDaemon `io.homecider.low-battery` |
-| `media` | Hidden user `_jellyfin` (UID 450), LaunchDaemon `io.homecider.jellyfin`, data in `/Library/Application Support/jellyfin`, a sudoers rule that lets you restart Jellyfin without a password. Your home folder becomes `750` and other home folders readable by other users become private |
+| `media` | Hidden user `_jellyfin` (UID 450), LaunchDaemon `io.homecider.jellyfin`, data in `/Library/Application Support/jellyfin`, a sudoers rule that lets you restart Jellyfin without a password. Your home folder becomes `700` and other home folders readable by other users become private |
 | `photos`, `downloads` or `dashboard` | A `PATH` line for OrbStack's `docker` in `~/.zshenv`, the compose and buildx plugins linked into `~/.docker/cli-plugins/`, OrbStack set to start at login with a memory cap (`DOCKER_MEMORY_MIB`) |
 | Files | Your settings in `~/.config/homecider/homecider.env`. Secrets (ntfy topic, database and app passwords) in `~/Library/Application Support/homecider/secrets.env` (mode 600), generated Compose settings in `~/Library/Application Support/homecider/compose/`. Nothing is written into the code folder |
 

@@ -71,11 +71,13 @@ for app in radarr sonarr prowlarr; do
   [ -n "$have" ] && continue
   for _ in $(seq 1 30); do [ -f "$cfg/$app/config.xml" ] && break; sleep 2; done
   key="$(sed -n 's:.*<ApiKey>\(.*\)</ApiKey>.*:\1:p' "$cfg/$app/config.xml")"
-  [ -n "$key" ] && set_secret "$var" "$key"
+  # The container can write config.xml, and the key ends up in .env: accept only the 32-character hex format.
+  if printf '%s' "$key" | grep -Eqx '[0-9a-f]{32}'; then set_secret "$var" "$key"
+  elif [ -n "$key" ]; then warn "$app: ignored an API key in config.xml that is not 32 hex characters"; fi
 done
 write_env
 
-sh "$dir/qbittorrent-setup.sh"
+QBIT_INTERFACE=$qbit_if sh "$dir/qbittorrent-setup.sh"
 dc downloads run --rm -T recyclarr sync < /dev/null
 
 # Cleanup rules need Maintainerr connected to Jellyfin, Radarr and Sonarr (done once in its web UI).

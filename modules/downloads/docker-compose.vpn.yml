@@ -4,7 +4,7 @@
 # gluetun:8080 (qBittorrent) and gluetun:9696 (Prowlarr).
 services:
   gluetun:
-    image: qmcgaw/gluetun:v3
+    image: qmcgaw/gluetun:v3.41.3
     container_name: gluetun
     cap_add:
       - NET_ADMIN
