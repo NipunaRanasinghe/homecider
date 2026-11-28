@@ -35,12 +35,14 @@ if has_battery; then
   check battery-condition "$([ "$cond" != Normal ] && echo 1 || echo 0)" "Battery condition: $cond" "macOS reports the battery needs service."
 fi
 
-if has_module media; then
-  check jellyfin-down "$(twice jellyfin-down "$(http_down http://localhost:8096/health)")" "Jellyfin is down" "Health check failed twice, 5 min apart."
-fi
-if has_module photos; then
-  check immich-down "$(twice immich-down "$(http_down http://localhost:2283/api/server/ping)")" "Immich is down" "Health check failed twice, 5 min apart."
-fi
+# Services of enabled modules with MOD_ALERT=yes (health URL from MOD_STATUS).
+for m in $(modules_with MOD_ALERT); do
+  read -r name url path <<EOT
+$(module_field "$m" MOD_STATUS)
+EOT
+  check "$name-down" "$(twice "$name-down" "$(http_down "$url${path:-}")")" "$(module_field "$m" MOD_TITLE) is down" \
+    "Health check failed twice, 5 min apart."
+done
 if uses_docker; then
   bad="$(docker ps -a --format '{{.Names}} ({{.Status}})' 2>/dev/null || echo 'docker not responding')"
   bad="$(echo "$bad" | grep -E 'Exited|Restarting|unhealthy|Dead|not responding' | tr '\n' ' ')"

@@ -25,6 +25,8 @@ mkdir -p "$PHOTOS_DIR" "$IMMICH_DB_DIR"
 # Photos folder private when it sits inside the home folder (e.g. ~/Photos).
 parent="$(dirname "$PHOTOS_DIR")"
 case "$parent" in "$HC_HOME"/*) chmod 700 "$parent" ;; esac
+# Release notices were stored as alerts/immich-<tag> before the module manifests; now release-photos-<tag>.
+rm -f "$HC_STATE"/alerts/immich-v*
 compose_pull photos
 dc photos up -d
 log "photos: Immich $IMMICH_VERSION on http://localhost:2283 (photos in $PHOTOS_DIR)"

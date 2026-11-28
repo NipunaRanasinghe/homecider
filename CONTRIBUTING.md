@@ -57,3 +57,25 @@ tests/                 BATS tests (run: bats tests)
 
 A module is a folder in `modules/` with `root.sh` and/or `user.sh`, enabled by name in `MODULES`. Before writing
 one, open an issue describing what it installs, what it changes on the Mac, and how it stays off the internet.
+
+A module that runs a service, uses Docker or stores data also has a manifest, `modules/<name>/module.env`.
+`lib/common.sh` sources every manifest, so it holds only variable assignments, no commands:
+
+- **Defaults** for the module's settings, as `: "${PHOTOS_DIR:=$HC_HOME/Photos/immich}"`. Also add each setting
+  to `homecider.env.example`.
+- **`MOD_*` fields**, read by the core scripts with `module_field <module> <field>`. Leave out the ones that do
+  not apply.
+
+| Field | Example | Used by |
+|---|---|---|
+| `MOD_TITLE` | `Immich` | Name in alert and release messages |
+| `MOD_STATUS` | `"immich http://localhost:2283 /api/server/ping"` | `homecider status`: short name, URL shown, health path (optional) |
+| `MOD_ALERT` | `yes` | Alerts job: "`MOD_TITLE` is down" when the `MOD_STATUS` health URL fails twice |
+| `MOD_COMPOSE` | `yes` | Module runs containers: OrbStack is installed and the weekly update pulls its images |
+| `MOD_RELEASE` | `"immich-app/immich IMMICH_VERSION"` | Weekly update: GitHub repository and version setting; one message per new release |
+| `MOD_BACKUP_PATHS` | `"$PHOTOS_DIR"` | Backup: folders to back up, space-separated, even when the module is off |
+| `MOD_BACKUP_EXCLUDES` | `"$PHOTOS_DIR/thumbs"` | Backup: folders not to back up (plain paths, no patterns) |
+| `MOD_KEPT` | `"$PHOTOS_DIR"` | Uninstall: data folders listed as kept |
+
+`tests/modules.bats` fails when a script outside a module's folder calls `has_module <name>` or uses one of the
+module's settings, unless that line is in the test's allow-list. Use a `MOD_*` field instead where one fits.
