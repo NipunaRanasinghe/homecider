@@ -19,7 +19,7 @@ fi
 alerts=""
 for a in "$HC_STATE"/alerts/*; do
   [ -e "$a" ] || continue
-  case "$(basename "$a")" in immich-*) ;; *) alerts="$alerts $(basename "$a")" ;; esac
+  case "$(basename "$a")" in release-*) ;; *) alerts="$alerts $(basename "$a")" ;; esac
 done
 alerts="${alerts# }"
 

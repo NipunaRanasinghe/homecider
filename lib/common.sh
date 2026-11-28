@@ -27,17 +27,10 @@ HC_ROOT_STABLE="$(echo "$HC_ROOT" | sed 's#/Cellar/homecider/[^/]*/#/opt/homecid
 [ -f "$HC_SECRETS" ] && . "$HC_SECRETS"
 
 # Defaults for everything homecider.env may leave out (documented in homecider.env.example).
+# Module settings have their defaults in modules/<m>/module.env, loaded below.
 : "${MODULES:=core media photos}"
 : "${TZ:=$(readlink /etc/localtime | sed 's#.*/zoneinfo/##')}"
 : "${DATA_DIR:=$HC_HOME/Library/HomeCider}"
-: "${MEDIA_DIR:=$HC_HOME/Media}"
-: "${PHOTOS_DIR:=$HC_HOME/Photos/immich}"
-: "${IMMICH_DB_DIR:=$DATA_DIR/immich-postgres}"
-: "${IMMICH_VERSION:=v3.4.1}"
-: "${DOWNLOADS_CONFIG_DIR:=$DATA_DIR/downloads}"
-: "${DOWNLOADS_NETWORK:=vpn}"
-: "${DOWNLOADS_ALLOW_HOME_IP:=false}"
-: "${DOWNLOADS_ACCEPT_RESPONSIBILITY:=false}"
 : "${DOCKER_MEMORY_MIB:=6144}"
 : "${DISK_ALERT_PCT:=85}"
 : "${BATTERY_SHUTDOWN_PCT:=15}"
@@ -45,7 +38,18 @@ HC_ROOT_STABLE="$(echo "$HC_ROOT" | sed 's#/Cellar/homecider/[^/]*/#/opt/homecid
 : "${UPDATE_HOUR:=4}"
 : "${UPDATE_ALL_HOMEBREW:=false}"
 : "${UPDATE_PRUNE_IMAGES:=true}"
-: "${JELLYFIN_UID:=450}"
+
+# Module manifests, modules/<m>/module.env (fields documented in CONTRIBUTING.md): defaults for the module's
+# settings, then MOD_* fields that core scripts read with module_field. Defaults are loaded for every module,
+# enabled or not, so the folders of a disabled module are still known (backup, uninstall).
+HC_MOD_FIELDS="MOD_TITLE MOD_STATUS MOD_ALERT MOD_COMPOSE MOD_RELEASE MOD_BACKUP_PATHS MOD_BACKUP_EXCLUDES MOD_KEPT"
+for _f in "$HC_ROOT"/modules/*/module.env; do
+  [ -f "$_f" ] || continue
+  # shellcheck disable=SC1090
+  . "$_f"
+done
+# shellcheck disable=SC2086
+unset $HC_MOD_FIELDS
 
 export PATH="/Applications/OrbStack.app/Contents/MacOS/xbin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export TZ
@@ -56,7 +60,24 @@ die()  { printf 'homecider: %s\n' "$*" >&2; exit 1; }
 
 has_module()  { case " $MODULES " in *" $1 "*) return 0 ;; esac; return 1; }
 has_battery() { pmset -g batt | grep -q InternalBattery; }
-uses_docker() { has_module photos || has_module downloads || has_module dashboard; }
+uses_docker() { [ -n "$(modules_with MOD_COMPOSE)" ]; }
+
+# One MOD_* field of a module's manifest; empty when the module has no manifest or does not set the field.
+# Read in a subshell with every field cleared first, so one module's fields never show up for another.
+module_field() {   # module field
+  case " $HC_MOD_FIELDS " in *" $2 "*) ;; *) die "unknown module field $2" ;; esac
+  [ -f "$HC_ROOT/modules/$1/module.env" ] || return 0
+  # shellcheck disable=SC1090,SC2086
+  ( unset $HC_MOD_FIELDS; . "$HC_ROOT/modules/$1/module.env"; eval "printf '%s' \"\${$2:-}\"" )
+}
+# Modules whose manifest sets FIELD, one per line: enabled modules in MODULES order, or with "all" every module
+# folder (for data that stays after a module is turned off).
+modules_with() {   # field [all]
+  if [ "${2:-}" = all ]; then _list="$(cd "$HC_ROOT/modules" && ls)"; else _list="$MODULES"; fi
+  for _m in $_list; do
+    if [ -n "$(module_field "$_m" "$1")" ]; then echo "$_m"; fi
+  done
+}
 
 # Run a command as the server owner (used by root scripts).
 as_user() { if [ "$(id -u)" = 0 ]; then sudo -u "$HC_USER" -H "$@"; else "$@"; fi; }
@@ -109,4 +130,4 @@ compose_pull() {   # module
 }
 
 # docker compose for a module: project directory in HC_COMPOSE/<module> (holds .env, which names the compose files).
-dc() { m="$1"; shift; docker compose --project-directory "$HC_COMPOSE/$m" "$@"; }
+dc() { _dc_dir="$HC_COMPOSE/$1"; shift; docker compose --project-directory "$_dc_dir" "$@"; }

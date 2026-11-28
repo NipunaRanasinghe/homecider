@@ -1,6 +1,7 @@
 #!/bin/sh
 # Runs weekly (launchd). Upgrades Homebrew casks, pulls newer container images and recreates those containers,
-# then sends one ntfy message if anything changed or failed. Immich is pinned: one message per new Immich release.
+# then sends one ntfy message if anything changed or failed. Apps pinned with MOD_RELEASE (Immich): one message
+# per new release.
 set -u
 HC_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; . "$HC_ROOT/lib/common.sh"
 failed=""
@@ -38,8 +39,7 @@ images_changed=""
 if uses_docker; then
   orbctl start >/dev/null 2>&1 || failed="$failed orbstack"   # a cask upgrade quits OrbStack
   images_before="$(images)"
-  for m in photos downloads; do
-    has_module "$m" || continue
+  for m in $(modules_with MOD_COMPOSE); do
     { dc "$m" pull -q && dc "$m" up -d; } || failed="$failed $m"
   done
   # Removes dangling images only (untagged and unused, e.g. the previous version after a pull); UPDATE_PRUNE_IMAGES=false keeps them.
@@ -47,14 +47,20 @@ if uses_docker; then
   images_changed="$(images | grep -vxF "$images_before" | cut -d' ' -f1 | tr -d / | tr '\n' ' ')"
 fi
 
-if has_module photos; then
-  latest="$(curl -fsS -m 15 https://api.github.com/repos/immich-app/immich/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')"
-  mkdir -p "$HC_STATE/alerts"
-  if [ -n "$latest" ] && [ "$latest" != "$IMMICH_VERSION" ] && [ ! -e "$HC_STATE/alerts/immich-$latest" ]; then
-    notify "Immich $latest released" "Running $IMMICH_VERSION. Read the release notes, then set IMMICH_VERSION in homecider.env and run homecider apply." package \
-      && touch "$HC_STATE/alerts/immich-$latest"
+# MOD_RELEASE is "<GitHub owner/repo> <version setting>", e.g. "immich-app/immich IMMICH_VERSION".
+mkdir -p "$HC_STATE/alerts"
+for m in $(modules_with MOD_RELEASE); do
+  read -r repo var <<EOT
+$(module_field "$m" MOD_RELEASE)
+EOT
+  running=""; eval "running=\${$var:-}"
+  title="$(module_field "$m" MOD_TITLE)"
+  latest="$(curl -fsS -m 15 "https://api.github.com/repos/$repo/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')"
+  if [ -n "$latest" ] && [ "$latest" != "$running" ] && [ ! -e "$HC_STATE/alerts/release-$m-$latest" ]; then
+    notify "$title $latest released" "Running $running. Read the release notes, then set $var in homecider.env and run homecider apply." package \
+      && touch "$HC_STATE/alerts/release-$m-$latest"
   fi
-fi
+done
 
 msg=""
 [ -n "$casks_changed" ] && msg="Apps: $(echo "$casks_changed" | tr '\n' ' ')"

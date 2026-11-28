@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # Warnings and errors fail the build; info-level style notes (e.g. the deliberate A && B || C) do not.
-      - run: shellcheck -s sh -S warning bin/homecider lib/common.sh modules/*/*.sh
+      - run: shellcheck -s sh -S warning bin/homecider lib/common.sh modules/*/*.sh modules/*/module.env
   bats:
     # lib/common.sh reads the user's home folder with dscl, so the tests need macOS.
     runs-on: macos-latest

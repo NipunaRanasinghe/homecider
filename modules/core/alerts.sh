@@ -4,6 +4,9 @@ set -u
 HC_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; . "$HC_ROOT/lib/common.sh"
 state="$HC_STATE/alerts"
 mkdir -p "$state"
+# Release notices were alerts/immich-<tag> before module manifests; update.sh now writes release-photos-<tag>.
+# Renamed here (every 5 minutes) so status does not list them as active alerts and the notice is not sent again.
+for f in "$state"/immich-v*; do [ -e "$f" ] && mv "$f" "$state/release-photos-${f##*/immich-}"; done
 
 # check NAME ACTIVE(0|1) TITLE MESSAGE
 check() {
@@ -35,12 +38,14 @@ if has_battery; then
   check battery-condition "$([ "$cond" != Normal ] && echo 1 || echo 0)" "Battery condition: $cond" "macOS reports the battery needs service."
 fi
 
-if has_module media; then
-  check jellyfin-down "$(twice jellyfin-down "$(http_down http://localhost:8096/health)")" "Jellyfin is down" "Health check failed twice, 5 min apart."
-fi
-if has_module photos; then
-  check immich-down "$(twice immich-down "$(http_down http://localhost:2283/api/server/ping)")" "Immich is down" "Health check failed twice, 5 min apart."
-fi
+# Services of enabled modules with MOD_ALERT=yes (health URL from MOD_STATUS).
+for m in $(modules_with MOD_ALERT); do
+  read -r name url path <<EOT
+$(module_field "$m" MOD_STATUS)
+EOT
+  check "$name-down" "$(twice "$name-down" "$(http_down "$url${path:-}")")" "$(module_field "$m" MOD_TITLE) is down" \
+    "Health check failed twice, 5 min apart."
+done
 if uses_docker; then
   bad="$(docker ps -a --format '{{.Names}} ({{.Status}})' 2>/dev/null || echo 'docker not responding')"
   bad="$(echo "$bad" | grep -E 'Exited|Restarting|unhealthy|Dead|not responding' | tr '\n' ' ')"

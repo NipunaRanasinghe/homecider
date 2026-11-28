@@ -89,7 +89,7 @@ sys.exit(0 if eval(sys.argv[1]) else 1)' "$1"
 
 @test "status: writes valid JSON with every field" {
   echo 'MODULES="core dashboard"' > "$HC_CONFIG"
-  mkdir -p "$HC_STATE/alerts"; touch "$HC_STATE/alerts/disk" "$HC_STATE/alerts/immich-v9"
+  mkdir -p "$HC_STATE/alerts"; touch "$HC_STATE/alerts/disk" "$HC_STATE/alerts/release-photos-v9"
   sh "$REPO/modules/dashboard/status.sh"
   python3 -c '
 import json, sys

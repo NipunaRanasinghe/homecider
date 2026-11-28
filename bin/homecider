@@ -55,6 +55,11 @@ cmd_doctor() {
     [ "$DOWNLOADS_NETWORK" = vpn ] && note "downloads: VPN-only; nothing downloads until a VPN is configured" ||
       note "downloads: home connection; your IP is visible to peers"
   fi
+  # Backup splits MOD_BACKUP_PATHS on spaces and expands * ? [, so folder settings must not contain them.
+  for v in DATA_DIR $(sed -n 's/^: "\${\([A-Z_]*_DIR\):=.*/\1/p' "$HC_ROOT"/modules/*/module.env); do
+    eval "p=\${$v:-}"
+    case "$p" in *" "*|*"*"*|*"?"*|*"["*) fail "$v must not contain spaces or * ? [ ($p)" ;; esac
+  done
   return $ok
 }
 
@@ -102,9 +107,12 @@ cmd_status() {
   for j in $jobs; do printf '  %-12s %s\n' "$j" "$(launchctl print "gui/$HC_UID/$HC_LABEL.$j" >/dev/null 2>&1 && echo loaded || echo MISSING)"; done
   has_battery && printf '  %-12s %s\n' low-battery "$(launchctl print "system/$HC_LABEL.low-battery" >/dev/null 2>&1 && echo loaded || echo MISSING)"
   echo "Services:"
-  has_module media && printf '  %-12s %s  http://localhost:8096\n' jellyfin "$(up http://localhost:8096/health)"
-  has_module photos && printf '  %-12s %s  http://localhost:2283\n' immich "$(up http://localhost:2283/api/server/ping)"
-  has_module dashboard && printf '  %-12s %s  http://localhost:3000\n' dashboard "$(up http://localhost:3000)"
+  for m in $(modules_with MOD_STATUS); do
+    read -r name url path <<EOT
+$(module_field "$m" MOD_STATUS)
+EOT
+    printf '  %-12s %s  %s\n' "$name" "$(up "$url${path:-}")" "$url"
+  done
   if uses_docker; then
     echo "Containers:"
     docker ps -a --format '{{.Names}}\t{{.Status}}' 2>/dev/null | sed 's/^/  /' || echo "  docker not responding"
@@ -112,7 +120,7 @@ cmd_status() {
   active=""
   for a in "$HC_STATE"/alerts/*; do
     [ -e "$a" ] || continue
-    case "$(basename "$a")" in immich-*) ;; *) active="$active $(basename "$a")" ;; esac
+    case "$(basename "$a")" in release-*) ;; *) active="$active $(basename "$a")" ;; esac
   done
   has_module backup && echo "Last backup: $( [ -f "$HC_STATE/backup-ok" ] && date -r "$(cat "$HC_STATE/backup-ok")" '+%Y-%m-%d %H:%M' || echo never)"
   echo "Active alerts: ${active:-none}"

@@ -35,9 +35,11 @@ printf 'Remove HomeCider services and system settings from this Mac? Data is kep
 read -r answer
 [ "$answer" = yes ] || die "cancelled"
 
-# Containers: stop and remove; volumes, images and data folders stay.
-for m in photos downloads dashboard; do
-  [ -f "$HC_COMPOSE/$m/.env" ] || continue
+# Containers: stop and remove; volumes, images and data folders stay. Every Compose project apply created has a
+# folder with a .env in HC_COMPOSE, including modules turned off since.
+for e in "$HC_COMPOSE"/*/.env; do
+  [ -f "$e" ] || continue
+  m="$(basename "$(dirname "$e")")"
   dc "$m" down || warn "could not stop the $m containers (is OrbStack running?); remove them with: docker compose down"
 done
 
@@ -57,6 +59,7 @@ log "root steps (sudo)"
 sudo sh "$HC_ROOT/modules/core/uninstall.sh" root
 
 log "uninstall finished. SSH password login and sleep are back to the macOS defaults."
-log "kept: $MEDIA_DIR, $PHOTOS_DIR, $DATA_DIR, /Library/Application Support/jellyfin, $HC_CONFIG, $HC_STATE"
+kept=""; for m in $(modules_with MOD_KEPT all); do kept="$kept$(module_field "$m" MOD_KEPT), "; done
+log "kept: $kept$DATA_DIR, $HC_CONFIG, $HC_STATE"
 log "left as set: firewall, sharing services (off), update policy, home-folder permissions (System Settings changes them)"
 log "to remove the apps: brew uninstall --cask orbstack jellyfin"
