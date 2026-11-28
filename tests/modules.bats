@@ -44,6 +44,16 @@ load_common() { . "$HC_ROOT/lib/common.sh"; }
   done
 }
 
+# Scripts call module_field and modules_with inside $(...), where die for an unknown field only ends the
+# subshell and the caller gets an empty list. This catches a mistyped field name in CI instead.
+@test "scripts: every MOD_ name used in the scripts is a known field" {
+  load_common
+  cd "$REPO"
+  for v in $(grep -ohE '(^|[^A-Z_])MOD_[A-Z][A-Z_]*' bin/homecider lib/*.sh modules/*/*.sh | sed 's/^[^M]*//' | sort -u); do
+    case " $HC_MOD_FIELDS " in *" $v "*) ;; *) echo "unknown field $v: $(grep -lw "$v" bin/homecider lib/*.sh modules/*/*.sh)"; return 1 ;; esac
+  done
+}
+
 @test "manifests: MOD_ fields are not left set after loading common.sh" {
   load_common
   for v in $HC_MOD_FIELDS; do
