@@ -4,6 +4,9 @@ set -u
 HC_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; . "$HC_ROOT/lib/common.sh"
 state="$HC_STATE/alerts"
 mkdir -p "$state"
+# Release notices were alerts/immich-<tag> before module manifests; update.sh now writes release-photos-<tag>.
+# Renamed here (every 5 minutes) so status does not list them as active alerts and the notice is not sent again.
+for f in "$state"/immich-v*; do [ -e "$f" ] && mv "$f" "$state/release-photos-${f##*/immich-}"; done
 
 # check NAME ACTIVE(0|1) TITLE MESSAGE
 check() {

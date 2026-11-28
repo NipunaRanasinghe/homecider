@@ -55,6 +55,11 @@ cmd_doctor() {
     [ "$DOWNLOADS_NETWORK" = vpn ] && note "downloads: VPN-only; nothing downloads until a VPN is configured" ||
       note "downloads: home connection; your IP is visible to peers"
   fi
+  # Backup splits MOD_BACKUP_PATHS on spaces and expands * ? [, so folder settings must not contain them.
+  for v in DATA_DIR $(sed -n 's/^: "\${\([A-Z_]*_DIR\):=.*/\1/p' "$HC_ROOT"/modules/*/module.env); do
+    eval "p=\${$v:-}"
+    case "$p" in *" "*|*"*"*|*"?"*|*"["*) fail "$v must not contain spaces or * ? [ ($p)" ;; esac
+  done
   return $ok
 }
 

@@ -60,7 +60,8 @@ die()  { printf 'homecider: %s\n' "$*" >&2; exit 1; }
 
 has_module()  { case " $MODULES " in *" $1 "*) return 0 ;; esac; return 1; }
 has_battery() { pmset -g batt | grep -q InternalBattery; }
-uses_docker() { [ -n "$(modules_with MOD_COMPOSE)" ]; }
+# Computed on first use, then cached: modules_with reads one manifest per enabled module.
+uses_docker() { [ -n "${_hc_compose_modules=$(modules_with MOD_COMPOSE)}" ]; }
 
 # One MOD_* field of a module's manifest; empty when the module has no manifest or does not set the field.
 # Read in a subshell with every field cleared first, so one module's fields never show up for another.
@@ -130,4 +131,4 @@ compose_pull() {   # module
 }
 
 # docker compose for a module: project directory in HC_COMPOSE/<module> (holds .env, which names the compose files).
-dc() { m="$1"; shift; docker compose --project-directory "$HC_COMPOSE/$m" "$@"; }
+dc() { _dc_dir="$HC_COMPOSE/$1"; shift; docker compose --project-directory "$_dc_dir" "$@"; }

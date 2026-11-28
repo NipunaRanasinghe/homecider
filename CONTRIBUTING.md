@@ -75,7 +75,7 @@ A module that runs a service, uses Docker or stores data also has a manifest, `m
 | `MOD_RELEASE` | `"immich-app/immich IMMICH_VERSION"` | Weekly update: GitHub repository and version setting; one message per new release |
 | `MOD_BACKUP_PATHS` | `"$PHOTOS_DIR"` | Backup: folders to back up, space-separated, even when the module is off |
 | `MOD_BACKUP_EXCLUDES` | `"$PHOTOS_DIR/thumbs"` | Backup: folders not to back up (plain paths, no patterns) |
-| `MOD_KEPT` | `"$PHOTOS_DIR"` | Uninstall: data folders listed as kept |
+| `MOD_KEPT` | `"$PHOTOS_DIR"` | Uninstall: text printed in the "kept:" line, comma-separated; not read as paths |
 
 `tests/modules.bats` fails when a script outside a module's folder calls `has_module <name>` or uses one of the
 module's settings, unless that line is in the test's allow-list. Use a `MOD_*` field instead where one fits.

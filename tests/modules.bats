@@ -150,3 +150,11 @@ modules/dashboard/user.sh has_module photos
 modules/downloads/user.sh MEDIA_DIR"
   [ "$found" = "$expected" ] || { diff <(echo "$expected") <(echo "$found"); return 1; }
 }
+
+@test "doctor: fails for a folder setting with a space or a glob character" {
+  printf '%s\n' 'PHOTOS_DIR="/x/my photos"' 'MEDIA_DIR=/x/media*' > "$HC_CONFIG"
+  run sh "$REPO/bin/homecider" doctor
+  [[ "$output" == *"FAIL  PHOTOS_DIR must not contain spaces or * ? [ (/x/my photos)"* ]]
+  [[ "$output" == *"FAIL  MEDIA_DIR must not contain spaces or * ? [ (/x/media*)"* ]]
+  [[ "$output" != *"FAIL  DATA_DIR"* ]]
+}

@@ -96,3 +96,12 @@ EOF
   [ "$status" -ne 0 ]
   [ ! -s "$STUB_LOG" ]
 }
+
+@test "alerts: renames old immich-<tag> release notices to release-photos-<tag>" {
+  echo 'MODULES="core"' >> "$HC_CONFIG"
+  mkdir -p "$HC_STATE/alerts"; touch "$HC_STATE/alerts/immich-v3.5.0" "$HC_STATE/alerts/immich-down"
+  run sh "$root/modules/core/alerts.sh"
+  [ -e "$HC_STATE/alerts/release-photos-v3.5.0" ]
+  [ ! -e "$HC_STATE/alerts/immich-v3.5.0" ]
+  [ -e "$HC_STATE/alerts/immich-down" ]
+}
